@@ -233,7 +233,6 @@
     opacity: 1;
     border-radius: 12px;
     border-width: 1px;
-    aspect-ratio: 1/1;
     color: white;
     cursor: pointer;
   }

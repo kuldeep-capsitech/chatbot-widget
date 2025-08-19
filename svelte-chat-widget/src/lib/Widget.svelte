@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import {open, openChat, openFaq} from "./store";
+  import { SendHorizonalIcon} from '@lucide/svelte';
 
   const handleOpen=() => {
     open.update(val=>!val);
@@ -69,7 +70,7 @@
          <div class="input">
           <input type="text" placeholder="Let's share something" />
           <!-- svelte-ignore a11y_consider_explicit_label -->
-          <button class="send">{">>"}</button>
+          <button class="send"><SendHorizonalIcon /></button>
          </div>
       </div>
     </div>
