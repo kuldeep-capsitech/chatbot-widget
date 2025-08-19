@@ -129,7 +129,7 @@
 }
   
   .chat-header {
-    background: #4f46e5;
+    background: linear-gradient(270deg, #A7BEFE 0%, #6E6EC5 36.11%, #5347AA 64.88%, #43319A 100%);;
     color: white;
     padding: 0.8rem;
     display: flex;
@@ -177,31 +177,81 @@
 
   #chat-options li{
     padding: 0.3rem;
-    border: 2px solid rgba(178, 227, 250, 0.933);
+    border: 1px solid #A3B9FA;
+    color: #A3B9FA;
     border-radius: 10px;
     list-style: none;
     padding: 0.3rem;
+    width: 130;
+    height: 32;
+    gap: 8px;
+    transition: transform 0.1s ease-in-out;
   }
+
   #chat-options li:hover{
     /* background: #f0f0f0; */
-    background: #9ab9ca;
+    transform: scale(1.03);
     cursor: pointer;
   }
 
-  .chat-body input{
+  .input{
     position: absolute;
     bottom: 0;
     left: 0;
-    padding: 1rem;
+    /* padding: 1rem; */
     /* border: 1px solid #ccc; */
+    margin: 12px;
     border: none;
-    width: 100%;
+    width: 376px;
+    height: 48px;
     box-sizing: border-box;
-    border-top: 0.5px solid #ccc;
-    background-color: #f0f0f0f5;
+    border: 1px solid #f0f0f0f5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
-  .chat-body input:focus{
+  .input input{
+    flex: 1;
+    height: 32px;
+    border: none;
+    outline: none;
+    background: transparent;
+  }
+
+  .input:focus{
     outline: none;
     /* border: 2px solid #46b3e5; */
+  }
+
+  .send{
+    background-color: #5347AA;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+    border-radius: 12px;
+    border-width: 1px;
+    aspect-ratio: 1/1;
+    color: white;
+    cursor: pointer;
+  }
+
+  .bot-msg{
+    width: 165px;
+    height: 32px;
+    opacity: 1;
+    gap: 10px;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    padding: 12px;
+    background-color: #F4F4F4;
+    font-family: Outfit;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0%;
   }
