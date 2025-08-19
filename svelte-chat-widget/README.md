@@ -1,6 +1,20 @@
 
 # 🧩 Svelte + Vite Chatbot Widget
 
+## 📚 Table of Contents
+
+1. [🌐 Shadow DOM: Encapsulation by Design](#-shadow-dom-encapsulation-by-design)
+2. [🚀 Getting Started with Svelte + Vite](#-getting-started-with-svelte--vite)
+   - [🛠 Recommended IDE Setup](#-recommended-ide-setup)
+3. [📦 Installation & Development](#-installation--development)
+4. [🏗 Building for Production](#-building-for-production)
+5. [🌍 Embedding the Widget via CDN](#-embedding-the-widget-via-cdn)
+6. [🧠 Technical Considerations](#-technical-considerations)
+   - [Why use this over SvelteKit?](#why-use-this-over-sveltekit)
+   - [Why `global.d.ts` instead of `compilerOptions.types`?](#why-globaldts-instead-of-compileroptionstypes)
+   - [Why include `.vscode/extensions.json`?](#why-include-vscodeextensionsjson)
+   - [Why enable `checkJs`?](#why-enable-checkjs)
+
 ## 🌐 Shadow DOM: Encapsulation by Design
 
 This widget is built using **Shadow DOM**, a browser-native technology that encapsulates a component’s structure, style, and behavior. By rendering the chat widget inside a shadow root, we ensure:
@@ -101,17 +115,3 @@ This file prompts VS Code to suggest installing the Svelte extension, improving 
 ### Why enable `checkJs`?
 
 It catches accidental type mismatches in JavaScript files, helping you write safer code without converting everything to TypeScript.
-
----
-
-## 🔁 HMR and State Preservation
-
-Hot Module Replacement (HMR) is enabled by default, but local component state is **not preserved** across reloads. For persistent state, use an external store:
-
-```js
-// store.js
-import { writable } from 'svelte/store';
-export default writable(0);
-```
-
----
