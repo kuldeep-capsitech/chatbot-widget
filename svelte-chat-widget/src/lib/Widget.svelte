@@ -91,9 +91,9 @@
         </div>
         
          <div class="input">
-          <input type="text" placeholder="Let's share something" />
+          <input type="text" placeholder="Let's share something" onkeydown={(e) => e.key === "Enter" && console.log("recorded") } />
           <!-- svelte-ignore a11y_consider_explicit_label -->
-          <button class="send"><img src="/src/assets/Shape.svg" alt=""></button>
+          <button class="send" tabindex="0" onclick={() => console.log("recorded")}><img src="/src/assets/Shape.svg" alt=""></button>
          </div>
       </div>
     </div>
@@ -106,9 +106,9 @@
           <h1>ChatFlow</h1>
           <p>A live chat interface that allows for seamless, natural communication and connection.</p>
         </div>
-        <!-- <div class="cross" role="button" tabindex="0" onclick={() => openChat.update(val=>!val)} onkeydown={(e) => e.key === "enter" && openChat.update(val=>!val)}>
+        <div class="cross" role="button" tabindex="0" onclick={() => {openAgent.update(val=>!val); openFaq.update(val=>!val)} } onkeydown={(e) => e.key === "enter" && openAgent.update(val=>!val)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x-icon lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-        </div> -->
+        </div>
       </div>
       <div class="chat-body">
         <p class="bot-msg">Thanks for joining us! Let's start by getting your name.</p>
@@ -119,7 +119,7 @@
          <div class="input">
           <input type="text" placeholder="Let's share something" />
           <!-- svelte-ignore a11y_consider_explicit_label -->
-          <button class="send"><img src="/src/assets/Shape.svg" alt=""></button>
+          <button class="send"><img src="/Shape.svg" alt=""></button>
          </div>
       </div>
     </div>

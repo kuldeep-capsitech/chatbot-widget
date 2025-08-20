@@ -10,7 +10,7 @@
   .chat-icon {
     /* position: absolute; */
     bottom: 20px;
-    background-image: url("/src/assets/Objects.svg");
+    background-image: url("/Objects.svg");
     background-repeat: no-repeat;
     background-size: contain;
     /* background-size: 120%; */
