@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import {open, openChat, openFaq, openAgent} from "./store";
+  import {open, openChat, openFaq, openAgent, showBot} from "./store";
 
   const handleOpen=() => {
     open.update(val=>!val);
@@ -12,10 +12,12 @@
   const handleOpenChat=()=>{
     if($open) open.update(val=>!val)
     openChat.update(val=>!val);
+    showBot.set(false);
   }
   const handleOpenAgent=()=>{
     if($open) open.update(val=>!val)
     openAgent.update(val=>!val);
+    showBot.set(false);
   }
   const handleOpenFaq=()=>{
     if($open) open.update(val=>!val); 
@@ -34,7 +36,8 @@
 
 <svelte:options customElement="chat-widget" />
 
-<div> 
+<div>
+  {#if $showBot}
   <div class="chat-icon" aria-live="polite" aria-label="Chat" role="button" tabindex="0" onclick={handleOpen} onkeydown={(e) => e.key === "Enter" && handleOpen}>
     <svg width="75" height="68" viewBox="0 0 75 68" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g filter="url(#filter0_d_8673_2670)">
@@ -64,6 +67,7 @@
     </defs>
     </svg>
   </div>
+  {/if}
 
   {#if $open}
       <div class="welcome-box" transition:fly="{{ y: 20, duration: 300 }}">
@@ -101,7 +105,7 @@
           <h1>ChatFlow</h1>
           <p>A live chat interface that allows for seamless, natural communication and connection.</p>
         </div>
-        <div class="cross" role="button" tabindex="0" onclick={() => openChat.update(val=>!val)} onkeydown={(e) => e.key === "enter" && openChat.update(val=>!val)}>
+        <div class="cross" role="button" tabindex="0" onclick={() => {openChat.update(val=>!val); showBot.set(true)}} onkeydown={(e) => e.key === "enter" && openChat.update(val=>!val)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x-icon lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
         </div>
       </div>
@@ -137,7 +141,7 @@
           <h1>ChatFlow</h1>
           <p>A live chat interface that allows for seamless, natural communication and connection.</p>
         </div>
-        <div class="cross" role="button" tabindex="0" onclick={() => {openAgent.update(val=>!val); openFaq.update(val=>!val)} } onkeydown={(e) => e.key === "enter" && openAgent.update(val=>!val)}>
+        <div class="cross" role="button" tabindex="0" onclick={() => {openAgent.update(val=>!val); openFaq.update(val=>!val); showBot.set(true)} } onkeydown={(e) => e.key === "enter" && openAgent.update(val=>!val)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x-icon lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
         </div>
       </div>
