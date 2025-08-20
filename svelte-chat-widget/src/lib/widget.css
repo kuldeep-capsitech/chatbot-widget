@@ -1,6 +1,6 @@
  
   :host {
-    all: initial; /* Reset styles */
+    all: initial; 
     position: fixed;
     bottom: 1rem;
     right: 1rem;
@@ -8,14 +8,7 @@
   }
 
   .chat-icon {
-    /* position: absolute; */
     bottom: 20px;
-    background-image: url("/Objects.svg");
-    background-repeat: no-repeat;
-    background-size: contain;
-    /* background-size: 120%; */
-    background-position-x: 100%;
-    background-position-y: 100%;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -70,7 +63,6 @@
     max-width: 290px;
     max-height: 124px;
     background: #E9E9E9;
-    /* just for visibility */
     padding-top: 12px;
     padding-right: 24px;
     padding-bottom: 12px;
@@ -98,10 +90,8 @@
 }
 
 .welcome-2 {
-    /* width: 290px; */
     height: 44px;
     display: flex;
-    /* justify-content: space-between; */
     gap: 10px;
 }
 
@@ -157,8 +147,6 @@
   .cross{
     cursor: pointer;
     padding-top: 1px;
-    /* margin-right: 5px; */
-    /* width: 15px; */
     font-size: 15rem;
   }
 
@@ -211,8 +199,6 @@
   }
 
   #chat-options li:hover{
-    /* background: #f0f0f0; */
-    /* transform: scale(1.03); */
     border: 2px solid #A3B9FA;
     cursor: pointer;
   }
@@ -221,8 +207,6 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    /* padding: 1rem; */
-    /* border: 1px solid #ccc; */
     margin: 12px;
     border: none;
     width: 376px;
@@ -246,7 +230,6 @@
 
   .input:focus{
     outline: none;
-    /* border: 2px solid #46b3e5; */
   }
 
   .send{
@@ -263,14 +246,12 @@
     cursor: pointer;
   }
 
-  .send img{
+  .send svg{
     width: 14px;
     height: 14px;
   }
 
   .bot-msg{
-    /* width: 165px; */
-    /* height: 32px; */
     padding: 12px;
     display: inline-block;
     max-width: 290px;
@@ -279,7 +260,6 @@
     border-bottom-right-radius: 16px;
     border-bottom-left-radius: 16px;
     padding-top: 12px;
-    /* padding-bottom: 12px; */
     text-align: left;
     background-color: #F4F4F4;
     font-family: 'Outfit', sans-serif;
@@ -334,9 +314,7 @@
     }
   
     .faq-options-li li:hover {
-      /* background: #f0f0f0; */
       transform: scale(1.03);
-      /* border: 2px solid #A3B9FA; */
       cursor: pointer;
     }
 
@@ -372,6 +350,4 @@
         border-bottom-right-radius: 16px;
         border-bottom-left-radius: 16px;
         list-style: none;
-        /* padding:12px; */
-        /* padding-left: 12px; */
     }
