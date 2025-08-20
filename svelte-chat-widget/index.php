@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Chat Widget Example</title>
-  <script src="https://cdn.jsdelivr.net/gh/biswarup-capsi/svelte-chatbot-widget@master/dist/chat-widget.iife.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/gh/biswarup-capsi/svelte-chatbot@master/dist/chat-widget.iife.js" defer></script>
 </head>
 <body>
   <h1>Welcome to My PHP Page</h1>

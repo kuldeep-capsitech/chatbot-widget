@@ -70,7 +70,7 @@ Once built, you can host the compiled JS file on a CDN (like jsDelivr, GitHub Pa
 
 ```html
 <!-- Include the widget script -->
-<script src="https://cdn.jsdelivr.net/gh/biswarup-capsi/sv-chatbot-widget@main/dist/chat-widget.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/biswarup-capsi/svelte-chatbot@master/dist/chat-widget.iife.js" defer></script>
 
 <!-- Use the custom element -->
 <chat-widget></chat-widget>
