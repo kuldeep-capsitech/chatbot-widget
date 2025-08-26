@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
-import { GoogleGenAI } from "@google/genai";
+// import { GoogleGenAI } from "@google/genai";
+// import OpenAI from "openai";
+import Groq from "groq-sdk";
+
 
 export default function ChatWidget() {
+
     const [showBot, setShowBot] = useState(true);
     const [open, setOpen] = useState(false);
     const [openFaq, setOpenFaq] = useState(false);
@@ -10,21 +14,66 @@ export default function ChatWidget() {
     const [openAgent, setOpenAgent] = useState(false);
     const [users, setUsers] = useState([{ name: 'John' }]);
     const [messages, setMessages] = useState([
-        { id: 1,type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
+        { id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [botResponseText, setBotResponse] = useState("I'm here to assist you with that!");
     const key = import.meta.env.VITE_KEY;
 
-    const ai = new GoogleGenAI({ apiKey: key});
+    // const ai = new GoogleGenAI({ apiKey: key});
+    const groq = new Groq({ apiKey: key, dangerouslyAllowBrowser: true });
 
     async function chat() {
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: inputValue,
-        });
-        return response.text;
+
+
+        const completion = await groq.chat.completions
+            .create({
+                messages: [
+                    {
+                        role: "user",
+                        content: inputValue,
+                    },
+                ],
+                model: "openai/gpt-oss-20b",
+            })
+            .then((chatCompletion) => {
+                return chatCompletion.choices[0]?.message?.content;
+            });
+    
+
+        // const client = new OpenAI({
+        //     baseURL: "https://api.x.ai/v1",
+        //     apiKey: key,
+        //     dangerouslyAllowBrowser: true
+        // });
+
+
+
+        // const completion = await client.chat.completions.create({
+        //     model: "grok-4-0709",
+        //     messages: [
+        //         {
+        //             role: "system",
+        //             content: "You are a chatbot. answer in brief."
+        //         },
+        //         {
+        //             role: "user",
+        //             content: inputValue
+        //         },
+        //     ],
+        //     temperature: 0,
+        // });
+
+
+        // const response = await ai.models.generateContent({
+        //     model: "gemini-2.5-flash",
+        //     contents: inputValue,
+        // });
         // console.log(response.text);
+
+        // return JSON.stringify(completion.choices[0].message);
+        return completion;
+
     }
 
     const handleOpen = () => setOpen(prev => !prev);
@@ -61,6 +110,7 @@ export default function ChatWidget() {
     ];
 
     useEffect(() => {
+
         // (async function () {
         //     await fetch('https://jsonplaceholder.typicode.com/ ')
         //         .then(res => res.json())
@@ -99,8 +149,8 @@ export default function ChatWidget() {
         setMessages(prev => [...prev, loadingMessage]);
 
         // Simulate bot response after delay
-        
-            chat().then((res) => {
+
+        chat().then((res) => {
             // setBotResponse(res)
             // Update the loader message with actual text
             setMessages(prev =>
@@ -111,7 +161,7 @@ export default function ChatWidget() {
                 )
             );
         });
-        
+
     };
 
     return (

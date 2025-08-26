@@ -40,9 +40,12 @@ export default function ChatWidget() {
 
     useEffect(() => {
         ; (async function () {
+            
             // const res = await axios.get("https://jsonplaceholder.typicode.com/users")
             // setUsers(res.data);
             // console.log(res)
+
+
             await fetch("https://jsonplaceholder.typicode.com/users")
                 .then(res=>res.json())
                 .then(data => setUsers(data))
