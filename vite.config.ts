@@ -8,6 +8,7 @@ export default defineConfig({
 		lib: {
 			entry: 'src/index.tsx',
 			name: 'ChatWidget',
+			// formats: ['iife','cjs', 'es', 'system', 'umd'],
 			formats: ['iife'],
 		},
 		minify: 'terser',  // better tree-shaking and compresses more aggressively
@@ -23,7 +24,8 @@ export default defineConfig({
 			inlineDynamicImports: true,
 			compact: true, // reduces whitespace in output
 			globals: {}
-		},
+			},
+			treeshake: 'smallest'
 		},
 		outDir: 'dist',
 	}

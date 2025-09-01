@@ -1,12 +1,8 @@
 import { useState, useEffect } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
-// import { GoogleGenAI } from "@google/genai";
-// import OpenAI from "openai";
-import Groq from "groq-sdk";
-
+import { GoogleGenAI } from "@google/genai";
 
 export default function ChatWidget() {
-
     const [showBot, setShowBot] = useState(true);
     const [open, setOpen] = useState(false);
     const [openFaq, setOpenFaq] = useState(false);
@@ -14,66 +10,42 @@ export default function ChatWidget() {
     const [openAgent, setOpenAgent] = useState(false);
     const [users, setUsers] = useState([{ name: 'John' }]);
     const [messages, setMessages] = useState([
-        { id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
+        { id: 1,type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [botResponseText, setBotResponse] = useState("I'm here to assist you with that!");
     const key = import.meta.env.VITE_KEY;
 
-    // const ai = new GoogleGenAI({ apiKey: key});
-    const groq = new Groq({ apiKey: key, dangerouslyAllowBrowser: true });
+    const ai = new GoogleGenAI({ apiKey: key});
 
     async function chat() {
-
-
-        const completion = await groq.chat.completions
-            .create({
-                messages: [
-                    {
-                        role: "user",
-                        content: inputValue,
-                    },
-                ],
-                model: "openai/gpt-oss-20b",
-            })
-            .then((chatCompletion) => {
-                return chatCompletion.choices[0]?.message?.content;
-            });
-    
-
-        // const client = new OpenAI({
-        //     baseURL: "https://api.x.ai/v1",
-        //     apiKey: key,
-        //     dangerouslyAllowBrowser: true
-        // });
-
-
-
-        // const completion = await client.chat.completions.create({
-        //     model: "grok-4-0709",
-        //     messages: [
-        //         {
-        //             role: "system",
-        //             content: "You are a chatbot. answer in brief."
-        //         },
-        //         {
-        //             role: "user",
-        //             content: inputValue
-        //         },
-        //     ],
-        //     temperature: 0,
-        // });
-
-
-        // const response = await ai.models.generateContent({
-        //     model: "gemini-2.5-flash",
-        //     contents: inputValue,
-        // });
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: inputValue,
+        });
+        return response.text;
         // console.log(response.text);
+    }
 
-        // return JSON.stringify(completion.choices[0].message);
-        return completion;
+    async function fetchFaqs() {
+        await fetch("https://localhost:5001/api/Chat/rootquestion", {
+            headers:
+                { Authorization: "Bearer " }
+        })
+            .then(res => res.json())
+            .then(data => { setFaqs(data.result);  console.log(data.result)})
+            .catch(err => console.log(err));
+    }
 
+    async function fetchFaqByQuestion(question:string) {
+        await fetch(`https://localhost:5001/api/Chat/GetbyQuestion?question=${question}`, {
+            method: "POST",
+            headers:
+                { Authorization: "Bearer " }
+        })
+            .then(res => res.json())
+            .then(data => setFaqs(data.result.bot.options))
+            .catch(err => console.log(err));
     }
 
     const handleOpen = () => setOpen(prev => !prev);
@@ -83,6 +55,7 @@ export default function ChatWidget() {
         setOpenFaq(true);
         setOpenChat(false);
         setOpenAgent(false);
+        fetchFaqs();
     };
 
     const handleOpenChat = () => {
@@ -101,22 +74,18 @@ export default function ChatWidget() {
         setShowBot(false);
     };
 
-    const faqs = [
-        'How do I apply?',
-        'What courses do you offer?',
-        'When do applications close?',
-        'Where is the campus located?',
-        'Ask something else'
-    ];
+    // const faqs = [
+    //     'How do I apply?',
+    //     'What courses do you offer?',
+    //     'When do applications close?',
+    //     'Where is the campus located?',
+    //     'Ask something else'
+    // ];
+
+    const [faqs, setFaqs] = useState<Faq[]>([]);
 
     useEffect(() => {
-
-        // (async function () {
-        //     await fetch('https://jsonplaceholder.typicode.com/ ')
-        //         .then(res => res.json())
-        //         .then(data => setUsers(data))
-        //         .catch(err => console.log(err));
-        // })();
+        // fetchFaqs();
 
         let payload =
             document.getElementById('my-script')?.getAttribute('data-payload') ||
@@ -134,25 +103,18 @@ export default function ChatWidget() {
         console.log('payload id: ' + payload);
     }, []);
 
-    // Add message dynamically
     const sendMessage = () => {
         if (!inputValue.trim()) return;
-
-        // Add user message
         const newMessage = { id: Date.now(), type: 'user', text: inputValue, time: dateParser(Date.now())[1], isLoading: false };
         setMessages(prev => [...prev, newMessage]);
         setInputValue('');
 
-        // Add temporary bot loader message
         const loaderId = Date.now() + 1;
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
-
-        // Simulate bot response after delay
-
-        chat().then((res) => {
+        
+            chat().then((res) => {
             // setBotResponse(res)
-            // Update the loader message with actual text
             setMessages(prev =>
                 prev.map(msg =>
                     msg.id === loaderId
@@ -161,7 +123,7 @@ export default function ChatWidget() {
                 )
             );
         });
-
+        
     };
 
     return (
@@ -241,7 +203,7 @@ export default function ChatWidget() {
                     <div className="faq-options">
                         <ul className="faq-options-li">
                             {faqs.map((faq, index) => (
-                                <li key={index}>{faq}</li>
+                                <li key={index} onClick={()=>fetchFaqByQuestion(faq.question)}>{faq.question}</li>
                             ))}
                             <div
                                 id="talk-btn"
