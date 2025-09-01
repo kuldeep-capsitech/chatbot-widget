@@ -202,20 +202,25 @@ export default function ChatWidget() {
             {/* FAQ Section */}
             {openFaq && !open && (
                 <div className="faq-box">
-                    <div className="faq-header">
-
-                        {faqDepth > 0 && (
-                            <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                                <span>Back to Start</span>
-                            </button>
-                        )}
-                    </div>
+                    
                     <div className="faq-options">
                         <ul className="faq-options-li">
+
+
+
                             {faqLoading ? <FaqSkeleton /> : faqs.map((faq, index) => (
                                 <li key={index} onClick={() => fetchFaqByQuestion(faq.question)}>{faq.question}</li>
                             ))}
+
+                            <div className="faq-header">
+
+                                {faqDepth > 0 && (
+                                    <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                                        <span>Back to Start</span>
+                                    </button>
+                                )}
+                            </div>
                             <div
                                 id="talk-btn"
                                 onClick={handleOpenAgent}

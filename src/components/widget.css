@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 1rem;
   /* right: 1rem; */
-  left: var(--host-left); 
+  left: var(--host-left);
   right: var(--host-right);
   z-index: 9999;
 }
@@ -134,7 +134,7 @@
   padding: 0.8rem;
   display: flex;
   justify-content: space-between;
-  font-family: 'Figtree', sans-serif;
+  font-family: "Figtree", sans-serif;
 }
 
 .chat-header div h1 {
@@ -146,12 +146,12 @@
   letter-spacing: 0%;
 }
 
-.bot-time{
+.bot-time {
   display: block;
   font-size: 10px;
   margin-left: 15px;
 }
-.user-time{
+.user-time {
   display: flex;
   font-size: 10px;
   /* margin-left: 15px; */
@@ -297,22 +297,22 @@
   left: var(--host-left);
 }
 
-.faq-header{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 8px;
-}
+/* .faq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+  }
 
-.faq-header h2{
-  margin: 0;
-  font-family: "Figtree", sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-}
+  .faq-header h2 {
+    margin: 0;
+    font-family: "Figtree", sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  } */
 
-.back-to-start{
-  display: inline-flex;
+.back-to-start {
+  /* display: inline-flex;
   align-items: center;
   gap: 6px;
   border: 1px solid #a3b9fa;
@@ -322,11 +322,27 @@
   padding: 6px 10px;
   cursor: pointer;
   font-family: Inter, sans-serif;
-  font-size: 12px;
+  font-size: 12px; */
+
+  cursor: pointer;
+  background-color: transparent;
+  color: #3c89e8;
+  padding: 12px 24px 12px 24px;
+  border-radius: 24px;
+  list-style: none;
+
+  letter-spacing: 1%;
+  text-align: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #3c89e8;
+  transition: all 0.3s ease-in-out;
 }
 
-.back-to-start:hover{
-  background: #f6f8ff;
+.back-to-start:hover {
+  background: #3c89e8;
+  color: white;
 }
 
 .faq-options {
@@ -387,16 +403,16 @@
 }
 
 .user-msg {
-    min-width: 15px;
-    width: fit-content;
-    padding: 5px 12px;
-    border: 1px solid #43319a;
-    border-top-left-radius: 16px;
-    border-bottom-right-radius: 16px;
-    border-bottom-left-radius: 16px;
-    margin-left: auto;
-    margin-bottom: 2.5px;
-    /* text-align: right; */
+  min-width: 15px;
+  width: fit-content;
+  padding: 5px 12px;
+  border: 1px solid #43319a;
+  border-top-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border-bottom-left-radius: 16px;
+  margin-left: auto;
+  margin-bottom: 2.5px;
+  /* text-align: right; */
 }
 
 .agent-user-msg {
@@ -444,7 +460,7 @@
   position: relative;
 }
 
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   display: none;
 }
 
@@ -476,7 +492,6 @@
   padding: 8px;
 }
 
-
 /* .loader{
   width: 50%;
   aspect-ratio: 1/1;
@@ -489,13 +504,25 @@
   animation: l5 1s infinite linear alternate;
 }
 @keyframes l5 {
-    0%  {box-shadow: 15px 0 #000, -15px 0 #0002;background: #000 }
-    33% {box-shadow: 15px 0 #000, -15px 0 #0002;background: #0002}
-    66% {box-shadow: 15px 0 #0002,-15px 0 #000; background: #0002}
-    100%{box-shadow: 15px 0 #0002,-15px 0 #000; background: #000 }
+  0% {
+    box-shadow: 15px 0 #000, -15px 0 #0002;
+    background: #000;
+  }
+  33% {
+    box-shadow: 15px 0 #000, -15px 0 #0002;
+    background: #0002;
+  }
+  66% {
+    box-shadow: 15px 0 #0002, -15px 0 #000;
+    background: #0002;
+  }
+  100% {
+    box-shadow: 15px 0 #0002, -15px 0 #000;
+    background: #000;
+  }
 }
 
-.loader-wrapper{
+.loader-wrapper {
   /* padding: 12px; */
   display: flex;
   justify-content: center;
@@ -540,7 +567,6 @@
   }
 }
 
-
 @media only screen and (max-width: 390px) {
   .chat-dialog {
     width: 90vw;
@@ -552,8 +578,8 @@
   }
 }
 @media only screen and (max-width: 350px) {
-  :host{
-    font-size:small;
+  :host {
+    font-size: small;
   }
   .chat-dialog {
     position: fixed;
@@ -562,31 +588,31 @@
     margin: 0;
   }
 
-  .chat-body{
+  .chat-body {
     width: 90vw;
   }
 
-  .input{
+  .input {
     width: calc(95vw - 18px);
   }
 }
 
 /* Larger devices scaling */
-@media (min-width: 391px) and (max-width: 768px){
-  .chat-dialog{
+@media (min-width: 391px) and (max-width: 768px) {
+  .chat-dialog {
     width: 90vw;
     height: 70vh;
   }
 
-  .messages{
+  .messages {
     margin-bottom: 20px;
   }
 
-  .input{
+  .input {
     width: calc(90vw - 18px);
   }
 
-  .faq-box{
+  .faq-box {
     width: 90vw;
     height: auto;
     bottom: 90px;
@@ -604,17 +630,12 @@
 }
 
 .shimmer {
-  background: linear-gradient(
-    to right,
-    #e9e9e9 0%,
-    #f5f5f5 50%,
-    #e9e9e9 100%
-  );
+  background: linear-gradient(to right, #e9e9e9 0%, #f5f5f5 50%, #e9e9e9 100%);
   background-size: 400px 100%;
   animation: shimmer 1.5s infinite linear;
 }
 
-.faq .li-skeleton{
+.faq .li-skeleton {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -639,5 +660,5 @@
   margin: 5px 0px;
 
   width: 160px;
-  height: 22px; 
+  height: 22px;
 }

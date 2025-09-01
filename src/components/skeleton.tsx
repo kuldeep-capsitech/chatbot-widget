@@ -6,8 +6,8 @@ const FaqSkeleton = () => {
           <li class="li-skeleton shimmer"></li>
           <li class="li-skeleton shimmer"></li>
           <li class="li-skeleton shimmer"></li>
-          <li class="li-skeleton shimmer"></li>
-          <li class="li-skeleton shimmer"></li>
+          {/* <li class="li-skeleton shimmer"></li>
+          <li class="li-skeleton shimmer"></li> */}
       </ul>
   )
 }
