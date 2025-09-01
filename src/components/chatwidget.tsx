@@ -30,7 +30,7 @@ export default function ChatWidget() {
     async function fetchFaqs() {
         await fetch("https://localhost:5001/api/Chat/rootquestion", {
             headers:
-                { Authorization: "Bearer " }
+                { Authorization: `Bearer ${import.meta.env.VITE_TOKEN}` }
         })
             .then(res => res.json())
             .then(data => { setFaqs(data.result);  console.log(data.result)})
@@ -41,7 +41,7 @@ export default function ChatWidget() {
         await fetch(`https://localhost:5001/api/Chat/GetbyQuestion?question=${question}`, {
             method: "POST",
             headers:
-                { Authorization: "Bearer " }
+                { Authorization: `Bearer ${import.meta.env.VITE_TOKEN}` }
         })
             .then(res => res.json())
             .then(data => setFaqs(data.result.bot.options))
