@@ -8,12 +8,10 @@ export default function ChatWidget() {
     const [openFaq, setOpenFaq] = useState(false);
     const [openChat, setOpenChat] = useState(false);
     const [openAgent, setOpenAgent] = useState(false);
-    const [users, setUsers] = useState([{ name: 'John' }]);
     const [messages, setMessages] = useState([
         { id: 1,type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
-    const [botResponseText, setBotResponse] = useState("I'm here to assist you with that!");
     const key = import.meta.env.VITE_KEY;
 
     const ai = new GoogleGenAI({ apiKey: key});
@@ -72,14 +70,6 @@ export default function ChatWidget() {
         setOpenAgent(true);
         setShowBot(false);
     };
-
-    // const faqs = [
-    //     'How do I apply?',
-    //     'What courses do you offer?',
-    //     'When do applications close?',
-    //     'Where is the campus located?',
-    //     'Ask something else'
-    // ];
 
     const [faqs, setFaqs] = useState<Faq[]>([]);
 
@@ -216,7 +206,7 @@ export default function ChatWidget() {
                 </div>
             )}
 
-            {/* c    Dynamic Chat Section */}
+            {/* Dynamic Chat Section */}
             {openChat && !open && (
                 <div className="chat-dialog fly-x">
                     <div className="chat-header">
@@ -269,7 +259,6 @@ export default function ChatWidget() {
                             ))}
                         </div>
 
-                        {/* Input & Send */}
                         <div className="input">
                             <input
                                 type="text"
@@ -325,11 +314,6 @@ export default function ChatWidget() {
                                 Thanks for joining us! Let's start by getting
                                 your name.
                             </p>
-                            {/* <ul className="agent-user-msg">
-                                {users.map((user, index) => (
-                                    <li key={index}>{user.name}</li>
-                                ))}
-                            </ul> */}
                             <div className="messages">
                                 {messages.map((msg, index) => (
                                     <p
