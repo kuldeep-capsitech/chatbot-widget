@@ -11,7 +11,7 @@ export default function ChatWidget() {
     const [openChat, setOpenChat] = useState(false);
     const [openAgent, setOpenAgent] = useState(false);
     const [messages, setMessages] = useState([
-        { id: 1,type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
+        { id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [faqLoading, setFaqLoading] = useState(true);
@@ -19,7 +19,7 @@ export default function ChatWidget() {
 
 
     const key = import.meta.env.VITE_KEY;
-    const ai = new GoogleGenAI({ apiKey: key});
+    const ai = new GoogleGenAI({ apiKey: key });
 
     async function chat() {
         const response = await ai.models.generateContent({
@@ -39,7 +39,7 @@ export default function ChatWidget() {
             .catch(err => console.log(err));
     }
 
-    async function fetchFaqByQuestion(question:string) {
+    async function fetchFaqByQuestion(question: string) {
         await fetch(`https://localhost:5001/api/Chat/GetbyQuestion?question=${question}`, {
             method: "POST",
             headers:
@@ -64,6 +64,7 @@ export default function ChatWidget() {
         setOpenChat(false);
         setOpenAgent(false);
         fetchFaqs();
+        fetchFaqs();
     };
 
     const handleOpenChat = () => {
@@ -85,6 +86,7 @@ export default function ChatWidget() {
     const [faqs, setFaqs] = useState<Faq[]>([]);
 
     useEffect(() => {
+        // fetchFaqs();
         // fetchFaqs();
 
         let payload =
@@ -112,8 +114,8 @@ export default function ChatWidget() {
         const loaderId = Date.now() + 1;
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
-        
-            chat().then((res) => {
+
+        chat().then((res) => {
             // setBotResponse(res)
             setMessages(prev =>
                 prev.map(msg =>
@@ -123,7 +125,7 @@ export default function ChatWidget() {
                 )
             );
         });
-        
+
     };
 
     return (
@@ -201,18 +203,18 @@ export default function ChatWidget() {
             {openFaq && !open && (
                 <div className="faq-box">
                     <div className="faq-header">
-                       
+
                         {faqDepth > 0 && (
                             <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
                                 <span>Back to Start</span>
                             </button>
                         )}
                     </div>
                     <div className="faq-options">
                         <ul className="faq-options-li">
-                            {faqLoading ? <FaqSkeleton /> :  faqs.map((faq, index) => (
-                                <li key={index} onClick={()=>fetchFaqByQuestion(faq.question)}>{faq.question}</li>
+                            {faqLoading ? <FaqSkeleton /> : faqs.map((faq, index) => (
+                                <li key={index} onClick={() => fetchFaqByQuestion(faq.question)}>{faq.question}</li>
                             ))}
                             <div
                                 id="talk-btn"
@@ -226,6 +228,7 @@ export default function ChatWidget() {
                 </div>
             )}
 
+            {/* Dynamic Chat Section */}
             {/* Dynamic Chat Section */}
             {openChat && !open && (
                 <div className="chat-dialog fly-x">

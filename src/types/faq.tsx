@@ -1,4 +1,4 @@
 export type Faq = {
-    id?: string 
+    id?: string
     question: string
 }

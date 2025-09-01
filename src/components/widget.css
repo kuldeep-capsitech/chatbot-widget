@@ -638,6 +638,6 @@
   align-items: center;
   margin: 5px 0px;
 
-  width: 160px; /* Optional: adjust to match expected content width */
-  height: 22px; /* Matches line-height */
+  width: 160px;
+  height: 22px; 
 }
