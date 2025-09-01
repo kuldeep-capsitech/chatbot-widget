@@ -341,7 +341,7 @@
 }
 
 .back-to-start:hover {
-  background: #3c89e8;
+    background: linear-gradient(270deg, #a7befe 0%, #43319a 100%);
   color: white;
 }
 
