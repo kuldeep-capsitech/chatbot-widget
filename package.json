@@ -10,9 +10,6 @@
 	"dependencies": {
 		"@biswarup598/date-parser": "^1.0.0",
 		"@google/genai": "^1.15.0",
-		"groq-sdk": "^0.30.0",
-		"import": "^0.0.6",
-		"openai": "^5.15.0",
 		"preact": "^10.26.9"
 	},
 	"devDependencies": {
