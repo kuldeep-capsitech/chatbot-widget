@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
 import { GoogleGenAI } from "@google/genai";
+import FaqSkeleton from './skeleton';
 
 export default function ChatWidget() {
     const [showBot, setShowBot] = useState(true);
@@ -12,8 +13,10 @@ export default function ChatWidget() {
         { id: 1,type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
-    const key = import.meta.env.VITE_KEY;
+    const [faqLoading, setFaqLoading] = useState(true);
 
+
+    const key = import.meta.env.VITE_KEY;
     const ai = new GoogleGenAI({ apiKey: key});
 
     async function chat() {
@@ -30,7 +33,7 @@ export default function ChatWidget() {
                 { Authorization: `Bearer ${import.meta.env.VITE_TOKEN}` }
         })
             .then(res => res.json())
-            .then(data => { setFaqs(data.result);  console.log(data.result)})
+            .then(data => { setFaqs(data.result); setFaqLoading(false); })
             .catch(err => console.log(err));
     }
 
@@ -41,7 +44,7 @@ export default function ChatWidget() {
                 { Authorization: `Bearer ${import.meta.env.VITE_TOKEN}` }
         })
             .then(res => res.json())
-            .then(data => setFaqs(data.result.bot.options))
+            .then(data => { setFaqs(data.result.bot.options); setFaqLoading(false); })
             .catch(err => console.log(err));
     }
 
@@ -191,7 +194,7 @@ export default function ChatWidget() {
                 <div className="faq-box">
                     <div className="faq-options">
                         <ul className="faq-options-li">
-                            {faqs.map((faq, index) => (
+                            {faqLoading ? <FaqSkeleton /> :  faqs.map((faq, index) => (
                                 <li key={index} onClick={()=>fetchFaqByQuestion(faq.question)}>{faq.question}</li>
                             ))}
                             <div
