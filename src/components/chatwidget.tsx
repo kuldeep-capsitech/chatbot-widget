@@ -24,7 +24,6 @@ export default function ChatWidget() {
             contents: inputValue,
         });
         return response.text;
-        // console.log(response.text);
     }
 
     async function fetchFaqs() {
