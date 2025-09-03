@@ -41,6 +41,8 @@ export default function ChatWidget() {
 
     /** ---- API FUNCTIONS ---- **/
 
+
+
     // Fetch initial FAQs
     async function fetchFaqs() {
         try {
