@@ -22,7 +22,7 @@ export default function ChatWidget() {
         if (el) {
             el.scrollTop = el.scrollHeight;
         }
-    }); 
+    });
 
 
     // Messages & Input
@@ -46,8 +46,9 @@ export default function ChatWidget() {
         try {
             const res = await api.get("/Chat/start", {
                 headers: {
-                'Content-Type': 'text/plain'
-            }});
+                    'Content-Type': 'text/plain'
+                }
+            });
             console.log(res.data?.result)
             setFaqs(res.data?.result?.questions);
             setFaqLoading(false);
@@ -107,9 +108,8 @@ export default function ChatWidget() {
     /** ---- EVENT HANDLERS ---- **/
 
     function handleFaqClick(question: string) {
-        openChat(); // Switch to chat view
+        openChat();
 
-        // Add user message
         const userMessage = {
             id: Date.now(),
             type: 'user',
@@ -117,13 +117,19 @@ export default function ChatWidget() {
             time: dateParser(Date.now())[1],
             isLoading: false
         };
-        setMessages(prev => [...prev, userMessage]);
+
+        if (isChatOpen) {
+            setMessages(prev => [...prev.slice(0, -1), userMessage]);
+        } else {
+            setMessages(prev => [...prev, userMessage]);
+        }
+
         setInputValue('');
 
-        // Remove clicked FAQ from the list
-        setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
+        if (isFaqOpen) {
+            setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
+        }
 
-        // Fetch bot response
         fetchFaqByQuestion(question);
     }
 
@@ -133,7 +139,7 @@ export default function ChatWidget() {
     // }
 
     function toggleWelcome() {
-        if(!isWelcomeOpen) setIsFaqOpen(false)
+        if (!isWelcomeOpen) setIsFaqOpen(false)
         setIsWelcomeOpen(prev => !prev);
     }
 
@@ -168,7 +174,7 @@ export default function ChatWidget() {
     };
 
     const closeChat = () => {
-        setIsAgentOpen(false);  
+        setIsAgentOpen(false);
         setIsChatOpen(false);
         setShowBotIcon(true);
         setMessages([{ id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
@@ -366,4 +372,3 @@ export default function ChatWidget() {
         </div>
     );
 }
-
