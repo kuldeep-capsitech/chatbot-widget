@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
 import { GoogleGenAI } from "@google/genai";
 import FaqSkeleton from './skeleton';
 import { api } from '../api';
-import { defaultAllowedOrigins } from 'vite';
-import {bot_icon, close_icon, send_icon } from '../assets/svg/index'
+import { bot_icon, close_icon, send_icon } from '../assets/svg';
 
 export default function ChatWidget() {
     // UI States
@@ -14,7 +13,17 @@ export default function ChatWidget() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isAgentOpen, setIsAgentOpen] = useState(false);
 
- 
+
+    // auto-scroll
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (el) {
+            el.scrollTop = el.scrollHeight;
+        }
+    }); 
+
 
     // Messages & Input
     const [messages, setMessages] = useState<Messages[]>([
@@ -282,7 +291,7 @@ export default function ChatWidget() {
 
                     <div className="chat-body">
                         {/* Messages */}
-                        <div className="messages">
+                        <div className="messages" ref={scrollRef}>
                             {messages.map((msg, index) => (
                                 <div key={index}>
                                     {msg.type === 'faq-options' ? (
