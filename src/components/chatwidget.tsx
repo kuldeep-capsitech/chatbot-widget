@@ -85,7 +85,7 @@ export default function ChatWidget() {
                     'Content-Type': 'application/json'
                 }
             });
-            const optionsData = res.data.result.bot.options;
+            const optionsData = res.data?.result?.options;
 
             setFaqDepth(prev => prev + 1);
 
@@ -93,7 +93,7 @@ export default function ChatWidget() {
             const botMessage = {
                 id: Date.now(),
                 type: 'bot',
-                text: res.data.result.bot.answer,
+                text: res.data?.result?.answer,
                 time: dateParser(Date.now())[1],
                 isLoading: false
             };
