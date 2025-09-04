@@ -60,6 +60,23 @@ export default function ChatWidget() {
         }
     }
 
+    // Fetch initial FAQs
+    async function CustomerChat() {
+        try {
+            const res = await api.get("/Chat/start", {
+                headers: {
+                    'Content-Type': 'text/plain'
+                }
+            });
+            console.log(res.data?.result)
+            setFaqs(res.data?.result?.questions);
+            setFaqLoading(false);
+            setFaqDepth(0);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     // Fetch bot response for selected FAQ
     async function fetchFaqByQuestion(question: string) {
         try {
