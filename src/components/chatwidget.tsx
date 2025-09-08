@@ -54,7 +54,7 @@ export default function ChatWidget() {
         }
     }
 
-    // Fetch initial FAQs
+    // signalR chat here
     async function CustomerChat() {
         try {
             const res = await api.get("/Chat/start", {
