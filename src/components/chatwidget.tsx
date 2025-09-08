@@ -35,7 +35,7 @@ export default function ChatWidget() {
     const [faqDepth, setFaqDepth] = useState(0);
 
     // Google AI Setup
-    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_KEY });
+    // const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_KEY });
 
     // Fetch initial FAQs
     async function fetchFaqs() {
@@ -126,13 +126,13 @@ export default function ChatWidget() {
     }
 
     // Handle user free-text chat with Google AI
-    async function chat() {
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: inputValue
-        });
-        return response.text;
-    }
+    // async function chat() {
+    //     const response = await ai.models.generateContent({
+    //         model: "gemini-2.5-flash",
+    //         contents: inputValue
+    //     });
+    //     return response.text;
+    // }
 
     /** ---- EVENT HANDLERS ---- **/
 
@@ -226,13 +226,13 @@ export default function ChatWidget() {
         setMessages(prev => [...prev, loadingMessage]);
 
         // Get AI response
-        chat().then(res => {
-            setMessages(prev =>
-                prev.map(msg =>
-                    msg.id === loaderId ? { ...msg, text: res, isLoading: false } : msg
-                )
-            );
-        });
+        // chat().then(res => {
+        //     setMessages(prev =>
+        //         prev.map(msg =>
+        //             msg.id === loaderId ? { ...msg, text: res, isLoading: false } : msg
+        //         )
+        //     );
+        // });
     }
 
     /** ---- INITIALIZATION ---- **/
