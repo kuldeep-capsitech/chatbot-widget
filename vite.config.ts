@@ -7,7 +7,7 @@ export default defineConfig({
 	plugins: [preact(), basicSsl()],
 	server: {
 		https: true,
-		host: true // Optional: exposes to LAN
+		// host: true // Optional: exposes to LAN
 	},
 	build: {
 		lib: {

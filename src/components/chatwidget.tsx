@@ -13,7 +13,6 @@ export default function ChatWidget() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isAgentOpen, setIsAgentOpen] = useState(false);
 
-
     // auto-scroll
     const scrollRef = useRef(null);
 
@@ -23,7 +22,6 @@ export default function ChatWidget() {
             el.scrollTop = el.scrollHeight;
         }
     });
-
 
     // Messages & Input
     const [messages, setMessages] = useState<Messages[]>([
@@ -38,10 +36,6 @@ export default function ChatWidget() {
 
     // Google AI Setup
     const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_KEY });
-
-    /** ---- API FUNCTIONS ---- **/
-
-
 
     // Fetch initial FAQs
     async function fetchFaqs() {
@@ -99,8 +93,24 @@ export default function ChatWidget() {
             };
             setMessages(prev => [...prev, botMessage]);
 
-            // (Optional) Add inline FAQ options in chat
-            if (optionsData && optionsData.length > 0) {
+            // Add inline FAQ options in chat, or Back to Start button if no options or no text and options
+            if (!res.data?.result?.answer && (!optionsData || optionsData.length === 0)) {
+                const backToStartMessage = {
+                    id: Date.now() + 1,
+                    type: 'back-to-start',
+                    time: dateParser(Date.now())[1],
+                    isLoading: false
+                };
+                setMessages(prev => [...prev, backToStartMessage]);
+            } else if (!optionsData || optionsData.length === 0) {
+                const backToStartMessage = {
+                    id: Date.now() + 1,
+                    type: 'back-to-start',
+                    time: dateParser(Date.now())[1],
+                    isLoading: false
+                };
+                setMessages(prev => [...prev, backToStartMessage]);
+            } else if (optionsData && optionsData.length > 0) {
                 const faqOptionsMessage = {
                     id: Date.now() + 1,
                     type: 'faq-options',
@@ -151,11 +161,6 @@ export default function ChatWidget() {
 
         fetchFaqByQuestion(question);
     }
-
-    // function handleFaqBackToStart() {
-    //     setFaqLoading(true);
-    //     fetchFaqs();
-    // }
 
     function toggleWelcome() {
         if (!isWelcomeOpen) setIsFaqOpen(false)
@@ -283,18 +288,11 @@ export default function ChatWidget() {
                                 ))
                             )}
                             <div className="faq-header">
-
                                 {faqDepth > 0 && (
                                     <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
                                         <span>Back to Start</span>
                                     </button>
-                                )}
-                            </div>
-                            {/* dfsjbksdjf */}
-                            <div className="faq-header">
-                                {faqDepth > 0 && (
-                                    <button className="back-to-start" onClick={handleFaqBackToStart}>Back to Start</button>
                                 )}
                             </div>
                             <div id="talk-btn" onClick={openAgent}>Can I talk to someone?</div>
@@ -329,25 +327,21 @@ export default function ChatWidget() {
                                                 </button>
                                             ))}
                                         </div>
-                                    ) : (!(msg.text === "") ?
+                                    ) : msg.type === 'back-to-start' ? (
+                                        <div className="faq-header">
+                                            <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                                                <span>Back to Start</span>
+                                            </button>
+                                        </div>
+                                    ) : (!(msg.text === "") ? (
                                         <>
                                             <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
                                                 {msg.isLoading ? <span className="loader"></span> : msg.text}
                                             </p>
                                             <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>
-                                        </> : (
-                                            <div className="faq-header">
-
-                                                {faqDepth > 0 && (
-                                                    <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                                                        <span>Back to Start</span>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        )
-                                    )}
-
+                                        </>
+                                    ) : null)}
                                 </div>
                             ))}
                         </div>

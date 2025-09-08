@@ -304,6 +304,7 @@
   border: 1px solid #3c89e8;
   transition: all 0.3s ease-in-out;
   margin-left: auto;
+  margin-top: 10px;
 }
 
 .back-to-start:hover {
