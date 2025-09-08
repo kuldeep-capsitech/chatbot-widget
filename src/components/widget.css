@@ -1,7 +1,6 @@
 :host {
   position: fixed;
   bottom: 1rem;
-  /* right: 1rem; */
   left: var(--host-left);
   right: var(--host-right);
   z-index: 9999;
