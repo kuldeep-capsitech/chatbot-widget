@@ -9,7 +9,6 @@
 	},
 	"dependencies": {
 		"@biswarup598/date-parser": "^1.0.0",
-		"axios": "^1.11.0",
 		"preact": "^10.26.9"
 	},
 	"devDependencies": {
