@@ -1,7 +1,7 @@
 :host {
   position: fixed;
   bottom: 1rem;
-  left: var(--host-left);
+  left: calc(var(--host-left)*2%);
   right: var(--host-right);
   z-index: 9999;
 }
@@ -112,6 +112,7 @@
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  left: calc(var(--host-left)*5px);
 }
 
 .faq:hover {

@@ -1,7 +1,6 @@
-// import axios from "axios";
+import axios from "axios";
 
-
-const api = window.axios?.create({
+const api = axios.create({
     baseURL: "https://localhost:5001/api"
 })
 
