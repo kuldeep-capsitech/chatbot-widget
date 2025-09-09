@@ -1,7 +1,7 @@
 :host {
   position: fixed;
   bottom: 1rem;
-  left: var(--host-left);
+  left: calc(var(--host-left)*2%);
   right: var(--host-right);
   z-index: 9999;
 }
@@ -337,6 +337,7 @@
 }
 
 .faq-options {
+  margin-left: calc(var(--host-left)*5px);
   padding: 0.5rem;
 }
 

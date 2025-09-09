@@ -241,13 +241,21 @@ export default function ChatWidget() {
         const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
 
         if (position === 'left') {
-            document.documentElement.style.setProperty('--host-left', '1%');
+            document.documentElement.style.setProperty('--host-left', '1');
         } else {
             document.documentElement.style.setProperty('--host-right', '1%');
         }
 
         console.log('payload id: ' + payload);
     }, []);
+
+    // useEffect(() => {
+    //     const scriptEl = document.getElementById('my-script');
+    //     const position = scriptEl?.getAttribute('data-position') || 'right';
+
+    //     document.documentElement.classList.remove('position-left', 'position-right');
+    //     document.documentElement.classList.add(`position-${position}`);
+    // }, []);
 
     /** ---- RENDER ---- **/
     return (
@@ -355,9 +363,9 @@ export default function ChatWidget() {
                                 onInput={e => setInputValue(e.currentTarget.value)}
                                 onKeyDown={e => e.key === 'Enter' && sendMessage()}
                             />
-                            <button className="send" onClick={sendMessage}>
+                            <div className="send" onClick={sendMessage}>
                                 {send_icon}
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -392,7 +400,7 @@ export default function ChatWidget() {
                                 onInput={e => setInputValue(e.currentTarget.value)}
                                 onKeyDown={e => e.key === 'Enter' && sendMessage()}
                             />
-                            <button className="send" onClick={sendMessage}>{send_icon}</button>
+                            <div className="send" onClick={sendMessage}>{send_icon}</div>
                         </div>
                     </div>
                 </div>
