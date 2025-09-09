@@ -112,7 +112,6 @@
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  left: calc(var(--host-left)*5px);
 }
 
 .faq:hover {
@@ -338,6 +337,7 @@
 }
 
 .faq-options {
+  margin-left: calc(var(--host-left)*5px);
   padding: 0.5rem;
 }
 
