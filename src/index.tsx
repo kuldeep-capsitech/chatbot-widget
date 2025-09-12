@@ -1,6 +1,8 @@
-import { h, render } from 'preact'
+import { h, render } from 'preact';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ChatWidget from './components/chatwidget.js';
 
+const queryClient = new QueryClient();
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
@@ -11,9 +13,9 @@ const css = `
 `;
 
 function injectStyles(shadowRoot) {
-    const style = document.createElement("style");
-    style.textContent = css;
-    shadowRoot.appendChild(style);
+  const style = document.createElement("style");
+  style.textContent = css;
+  shadowRoot.appendChild(style);
 }
 
 const widgetContainer = document.createElement("div");
@@ -34,8 +36,4 @@ document.body.appendChild(widgetContainer);
 
 // Render the component into the Shadow DOM
 // Use the widgetRoot as the container for Preact
-render(h(ChatWidget, null), widgetRoot);
-
-
-
-// render(<App />, document.getElementById('app'))
+render(h(QueryClientProvider, { client: queryClient }, h(ChatWidget, null)), widgetRoot);
