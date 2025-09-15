@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
-// import { GoogleGenAI } from "@google/genai";
 import FaqSkeleton from './skeleton';
 import { api } from '../api';
 import { bot_icon, close_icon, send_icon } from '../assets/svg';
@@ -13,6 +12,9 @@ export default function ChatWidget() {
     const [isFaqOpen, setIsFaqOpen] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isAgentOpen, setIsAgentOpen] = useState(false);
+    const [companyId, setCompanyId] = useState('');
+
+
 
     // auto-scroll
     const scrollRef = useRef(null);
@@ -34,85 +36,129 @@ export default function ChatWidget() {
     const [faqs, setFaqs] = useState<Faq[]>([]);
     const [faqDepth, setFaqDepth] = useState(0);
 
-    // Google AI Setup
-    // const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_KEY });
+
+    useEffect(() => {
+        const commingCompanyId = document.getElementById('my-script')?.getAttribute('data-payload') || 'hi';
+        const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
+
+        if (position === 'left') {
+            document.documentElement.style.setProperty('--host-left', '1');
+        } else {
+            document.documentElement.style.setProperty('--host-right', '1%');
+        }
+
+        console.log('payload id: ' + commingCompanyId);
+        setCompanyId(commingCompanyId);
+    }, []);
+
+
 
     // TanStack Query for initial FAQs
     const { data: initialFaqsData, isLoading: faqLoading, refetch: refetchFaqs } = useQuery({
-        queryKey: ['faqs', 'start'],
+        queryKey: ["faqs", "start"],
         queryFn: async () => {
-            const res = await api.get("/Chat/start", {
-                headers: {
-                    'Content-Type': 'text/plain'
+            const res = await api.post(
+                "/Chat/start",
+                { companyId },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
-            });
+            );
+
             return res.data?.result;
         },
-        enabled: false // Fetch manually via refetch
+        enabled: !!companyId && isFaqOpen,
+        staleTime: 1000 * 60 * 5, // Cache FAQs for 5 minutes
+        // cacheTime: 1000 * 60 * 10, // Keep cache for 10 minutes
+        retry: 2,
+
+        // onError: (err) => {
+        //     console.error('FAQ fetch error:', err);
+        //     setMessages(prev => [...prev, {
+        //         id: Date.now(),
+        //         type: 'bot',
+        //         text: 'Sorry, there was an error loading FAQs. Please try again.',
+        //         time: dateParser(Date.now())[1],
+        //         isLoading: false
+        //     }]);
+        // }
     });
 
+
+
+
+
+
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------
     useEffect(() => {
         if (initialFaqsData) {
-            setFaqs(initialFaqsData.questions);
+            setFaqs(initialFaqsData.rootQuestions);
             setFaqDepth(0);
         }
     }, [initialFaqsData]);
 
     // TanStack Query mutation for FAQ by question
+
     const fetchFaqMutation = useMutation({
         mutationFn: async (question: string) => {
-            const res = await api.post(`/Chat/GetbyQuestion`, JSON.stringify(question), {
-                headers: {
-                    'Content-Type': 'application/json'
+            const res = await api.post(
+                `/Chat/faq/answer`,
+                { question, companyId }, // 👈 proper body
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
-            });
+            );
             return res.data?.result;
         },
         onSuccess: (data) => {
-            setFaqDepth(prev => prev + 1);
+            setFaqDepth((prev) => prev + 1);
 
             // Add bot response message
             const botMessage = {
                 id: Date.now(),
-                type: 'bot',
+                type: "bot",
                 text: data.answer,
                 time: dateParser(Date.now())[1],
-                isLoading: false
+                isLoading: false,
             };
-            setMessages(prev => [...prev, botMessage]);
+            setMessages((prev) => [...prev, botMessage]);
 
-            // Add inline FAQ options in chat, or Back to Start button if no options or no text and options
+            // Handle options or back-to-start
             const optionsData = data.options;
             if (!data.answer && (!optionsData || optionsData.length === 0)) {
                 const backToStartMessage = {
                     id: Date.now() + 1,
-                    type: 'back-to-start',
+                    type: "back-to-start",
                     time: dateParser(Date.now())[1],
-                    isLoading: false
+                    isLoading: false,
                 };
-                setMessages(prev => [...prev, backToStartMessage]);
+                setMessages((prev) => [...prev, backToStartMessage]);
             } else if (!optionsData || optionsData.length === 0) {
                 const backToStartMessage = {
                     id: Date.now() + 1,
-                    type: 'back-to-start',
+                    type: "back-to-start",
                     time: dateParser(Date.now())[1],
-                    isLoading: false
+                    isLoading: false,
                 };
-                setMessages(prev => [...prev, backToStartMessage]);
+                setMessages((prev) => [...prev, backToStartMessage]);
             } else if (optionsData && optionsData.length > 0) {
                 const faqOptionsMessage = {
                     id: Date.now() + 1,
-                    type: 'faq-options',
+                    type: "faq-options",
                     options: optionsData,
                     time: dateParser(Date.now())[1],
-                    isLoading: false
+                    isLoading: false,
                 };
-                setMessages(prev => [...prev, faqOptionsMessage]);
+                setMessages((prev) => [...prev, faqOptionsMessage]);
             }
         },
         onError: (err) => {
             console.error(err);
-        }
+        },
     });
 
     // signalR chat here
@@ -130,15 +176,6 @@ export default function ChatWidget() {
             console.error(err);
         }
     }
-
-    // Handle user free-text chat with Google AI
-    // async function chat() {
-    //     const response = await ai.models.generateContent({
-    //         model: "gemini-2.5-flash",
-    //         contents: inputValue
-    //     });
-    //     return response.text;
-    // }
 
     /** ---- EVENT HANDLERS ---- **/
 
@@ -230,37 +267,10 @@ export default function ChatWidget() {
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
-        // Get AI response
-        // chat().then(res => {
-        //     setMessages(prev =>
-        //         prev.map(msg =>
-        //             msg.id === loaderId ? { ...msg, text: res, isLoading: false } : msg
-        //         )
-        //     );
-        // });
     }
 
     /** ---- INITIALIZATION ---- **/
-    useEffect(() => {
-        const payload = document.getElementById('my-script')?.getAttribute('data-payload') || 'hi';
-        const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
 
-        if (position === 'left') {
-            document.documentElement.style.setProperty('--host-left', '1');
-        } else {
-            document.documentElement.style.setProperty('--host-right', '1%');
-        }
-
-        console.log('payload id: ' + payload);
-    }, []);
-
-    // useEffect(() => {
-    //     const scriptEl = document.getElementById('my-script');
-    //     const position = scriptEl?.getAttribute('data-position') || 'right';
-
-    //     document.documentElement.classList.remove('position-left', 'position-right');
-    //     document.documentElement.classList.add(`position-${position}`);
-    // }, []);
 
     /** ---- RENDER ---- **/
     return (
