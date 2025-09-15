@@ -6,9 +6,7 @@ import { bot_icon, close_icon, send_icon } from '../assets/svg';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 export default function ChatWidget() {
-
-
-    //---------------------------------------------------------- UI States ----------------------------------------------------------
+    // UI States
     const [showBotIcon, setShowBotIcon] = useState(true);
     const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
     const [isFaqOpen, setIsFaqOpen] = useState(false);
@@ -16,8 +14,11 @@ export default function ChatWidget() {
     const [isAgentOpen, setIsAgentOpen] = useState(false);
     const [companyId, setCompanyId] = useState('');
 
-    //---------------------------------------------------------- auto-scroll ----------------------------------------------------------
+
+
+    // auto-scroll
     const scrollRef = useRef(null);
+
     useEffect(() => {
         const el = scrollRef.current;
         if (el) {
@@ -25,15 +26,16 @@ export default function ChatWidget() {
         }
     });
 
-    //---------------------------------------------------------- Messages & Inpu t----------------------------------------------------------
+    // Messages & Input
     const [messages, setMessages] = useState<Messages[]>([
         { id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
 
-    //---------------------------------------------------------- FAQ State ----------------------------------------------------------
+    // FAQ State
     const [faqs, setFaqs] = useState<Faq[]>([]);
     const [faqDepth, setFaqDepth] = useState(0);
+
 
     useEffect(() => {
         const commingCompanyId = document.getElementById('my-script')?.getAttribute('data-payload') || 'hi';
@@ -51,9 +53,10 @@ export default function ChatWidget() {
 
 
 
-    //---------------------------------------------------------- TanStack Query for initial FAQs ----------------------------------------------------------
+    // TanStack Query for initial FAQs
+    // TanStack Query for initial FAQs
     const { data: initialFaqsData, isLoading: faqLoading, refetch: refetchFaqs } = useQuery({
-        queryKey: ["faqs", "start"],
+        queryKey: ["faqs", companyId], // Include companyId for cache specificity
         queryFn: async () => {
             const res = await api.post(
                 "/Chat/start",
@@ -64,14 +67,17 @@ export default function ChatWidget() {
                     },
                 }
             );
-
             return res.data?.result;
         },
-        enabled: !!companyId && isFaqOpen,
+        enabled: !!companyId,
         staleTime: 1000 * 60 * 15,
-        // cacheTime: 1000 * 60 * 10, 
         retry: 2,
     });
+
+
+
+
+
 
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------
     useEffect(() => {
@@ -81,13 +87,13 @@ export default function ChatWidget() {
         }
     }, [initialFaqsData]);
 
-    //---------------------------------------------------------- TanStack Query mutation for FAQ by question ----------------------------------------------------------
+    // TanStack Query mutation for FAQ by question
 
     const fetchFaqMutation = useMutation({
         mutationFn: async (question: string) => {
             const res = await api.post(
                 `/Chat/faq/answer`,
-                { question, companyId },
+                { question, companyId }, 
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -99,7 +105,7 @@ export default function ChatWidget() {
         onSuccess: (data) => {
             setFaqDepth((prev) => prev + 1);
 
-            //---------------------------------------------------------- Add bot response message ----------------------------------------------------------
+            // Add bot response message
             const botMessage = {
                 id: Date.now(),
                 type: "bot",
@@ -109,7 +115,7 @@ export default function ChatWidget() {
             };
             setMessages((prev) => [...prev, botMessage]);
 
-            //---------------------------------------------------------- Handle options or back-to-start ----------------------------------------------------------
+            // Handle options or back-to-start
             const optionsData = data.options;
             if (!data.answer && (!optionsData || optionsData.length === 0)) {
                 const backToStartMessage = {
@@ -143,36 +149,23 @@ export default function ChatWidget() {
         },
     });
 
-    //---------------------------------------------------------- signalR chat here ----------------------------------------------------------
-
+    // signalR chat here
     async function CustomerChat() {
         try {
-            const res = await api.post(
-                `/Chat/request-live-chat`,
-                {
-                    companyId,
-                    "customerName": "string",
-                    "customerEmail": "user@example.com",
-                    "customerPhone": "string",
-                    "initialQuery": "string"
+            const res = await api.get("/Chat/start", {
+                headers: {
+                    'Content-Type': 'text/plain'
                 }
-            );
-
-            console.log(res.data);
-
-            console.log("Agent availability:", res.data?.result);
-
-            if (res.data?.result?.questions) {
-                setFaqs(res.data.result.questions);
-                setFaqDepth(0);
-            } else {
-                console.warn("No questions found in response");
-            }
+            });
+            console.log(res.data?.result)
+            setFaqs(res.data?.result?.questions);
+            setFaqDepth(0);
         } catch (err) {
-            console.error("Error fetching agent availability:", err);
+            console.error(err);
         }
     }
-    /** -------------------------------------------------------------- EVENT HANDLERS -------------------------------------------------------------- **/
+
+    /** ---- EVENT HANDLERS ---- **/
 
     function handleFaqClick(question: string) {
         openChat();
@@ -243,7 +236,7 @@ export default function ChatWidget() {
         setMessages([{ id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
     }
 
-    //---------------------------------------------------------- Handle user input message send ----------------------------------------------------------
+    // Handle user input message send
     function sendMessage() {
         if (!inputValue.trim()) return;
 
@@ -257,24 +250,27 @@ export default function ChatWidget() {
         setMessages(prev => [...prev, newMessage]);
         setInputValue('');
 
-        //---------------------------------------------------------- Add loading indicator for bot response ----------------------------------------------------------
+        // Add loading indicator for bot response
         const loaderId = Date.now() + 1;
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
     }
 
-    /** -------------------------------------------------------------- RENDER -------------------------------------------------------------- **/
+    /** ---- INITIALIZATION ---- **/
+
+
+    /** ---- RENDER ---- **/
     return (
         <div id="chat-root">
-            {/* ---------------------------------------------------------- Floating Chat Icon ----------------------------------------------------------*/}
+            {/* Floating Chat Icon */}
             {showBotIcon && (
                 <div className="chat-icon" role="button" onClick={toggleWelcome}>
                     {bot_icon}
                 </div>
             )}
 
-            {/* ---------------------------------------------------------- Welcome Popup ---------------------------------------------------------- */}
+            {/* Welcome Popup */}
             {isWelcomeOpen && (
                 <div className="welcome-box fly-y">
                     <div className="welcome">
@@ -292,135 +288,141 @@ export default function ChatWidget() {
                         >
                             Let's Talk
                         </div>
-
                     </div>
                 </div>
-            )}
+            )
+            }
 
-            {/* ---------------------------------------------------------- FAQ Section ----------------------------------------------------------*/}
-            {isFaqOpen && (
-                <div className="faq-box">
-                    <div className="faq-options">
-                        <ul className="faq-options-li">
-                            {faqLoading ? (
-                                <FaqSkeleton />
-                            ) : (
-                                faqs.map((faq, index) => (
-                                    <li key={index} onClick={() => handleFaqClick(faq.question)}>
-                                        {faq.question}
-                                    </li>
-                                ))
-                            )}
-                            <div className="faq-header">
-                                {faqDepth > 0 && (
-                                    <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                                        <span>Back to Start</span>
-                                    </button>
+            {/* FAQ Section */}
+            {
+                isFaqOpen && (
+                    <div className="faq-box">
+                        <div className="faq-options">
+                            <ul className="faq-options-li">
+                                {faqLoading ? (
+                                    <FaqSkeleton />
+                                ) : (
+                                    faqs.map((faq, index) => (
+                                        <li key={index} onClick={() => handleFaqClick(faq.question)}>
+                                            {faq.question}
+                                        </li>
+                                    ))
                                 )}
-                            </div>
-                            <div id="talk-btn" onClick={openAgent}>Can I talk to someone?</div>
-                        </ul>
-                    </div>
-                </div>
-            )}
-
-            {/* ---------------------------------------------------------- Chat Section ----------------------------------------------------------*/}
-            {isChatOpen && (
-                <div className="chat-dialog fly-x">
-                    <div className="chat-header">
-                        <div>
-                            <h1>ChatFlow</h1>
-                            <p>A live chat interface for seamless communication.</p>
-                        </div>
-                        <div className="cross" role="button" onClick={closeChat}>
-                            {close_icon}
-                        </div>
-                    </div>
-
-                    <div className="chat-body">
-                        {/* ---------------------------------------------------------- Messages ---------------------------------------------------------- */}
-                        <div className="messages" ref={scrollRef}>
-                            {messages.map((msg, index) => (
-                                <div key={index}>
-                                    {msg.type === 'faq-options' ? (
-                                        <div className="faq-inline-options">
-                                            {msg.options && msg.options.map((option: Faq, idx: number) => (
-                                                <button key={idx} className="faq-inline-btn" onClick={() => handleFaqClick(option.question)}>
-                                                    {option.question}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    ) : msg.type === 'back-to-start' ? (
-                                        <div className="faq-header">
-                                            <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                                                <span>Back to Start</span>
-                                            </button>
-                                        </div>
-                                    ) : (!(msg.text === "") ? (
-                                        <>
-                                            <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
-                                                {msg.isLoading ? <span className="loader"></span> : msg.text}
-                                            </p>
-                                            <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>
-                                        </>
-                                    ) : null)}
+                                <div className="faq-header">
+                                    {faqDepth > 0 && (
+                                        <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                                            <span>Back to Start</span>
+                                        </button>
+                                    )}
                                 </div>
-                            ))}
+                                <div id="talk-btn" onClick={openAgent}>Can I talk to someone?</div>
+                            </ul>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Chat Section */}
+            {
+                isChatOpen && (
+                    <div className="chat-dialog fly-x">
+                        <div className="chat-header">
+                            <div>
+                                <h1>ChatFlow</h1>
+                                <p>A live chat interface for seamless communication.</p>
+                            </div>
+                            <div className="cross" role="button" onClick={closeChat}>
+                                {close_icon}
+                            </div>
                         </div>
 
-                        {/* ---------------------------------------------------------- Input ---------------------------------------------------------- */}
-                        <div className="input">
-                            <input
-                                type="text"
-                                placeholder="Type your message..."
-                                value={inputValue}
-                                onInput={e => setInputValue(e.currentTarget.value)}
-                                onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                            />
-                            <div className="send" onClick={sendMessage}>
-                                {send_icon}
+                        <div className="chat-body">
+                            {/* Messages */}
+                            <div className="messages" ref={scrollRef}>
+                                {messages.map((msg, index) => (
+                                    <div key={index}>
+                                        {msg.type === 'faq-options' ? (
+                                            <div className="faq-inline-options">
+                                                {msg.options && msg.options.map((option: Faq, idx: number) => (
+                                                    <button key={idx} className="faq-inline-btn" onClick={() => handleFaqClick(option.question)}>
+                                                        {option.question}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        ) : msg.type === 'back-to-start' ? (
+                                            <div className="faq-header">
+                                                <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                                                    <span>Back to Start</span>
+                                                </button>
+                                            </div>
+                                        ) : (!(msg.text === "") ? (
+                                            <>
+                                                <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
+                                                    {msg.isLoading ? <span className="loader"></span> : msg.text}
+                                                </p>
+                                                <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>
+                                            </>
+                                        ) : null)}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Input */}
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    placeholder="Type your message..."
+                                    value={inputValue}
+                                    onInput={e => setInputValue(e.currentTarget.value)}
+                                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                                />
+                                <div className="send" onClick={sendMessage}>
+                                    {send_icon}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {/* ---------------------------------------------------------- Agent Section ---------------------------------------------------------- */}
-            {isAgentOpen && (
-                <div className="chat-dialog fly-x">
-                    <div className="chat-header">
-                        <div>
-                            <h1>ChatFlow</h1>
-                            <p>A live chat interface for seamless communication.</p>
+            {/* Agent Section */}
+            {
+                isAgentOpen && (
+                    <div className="chat-dialog fly-x">
+                        <div className="chat-header">
+                            <div>
+                                <h1>ChatFlow</h1>
+                                <p>A live chat interface for seamless communication.</p>
+                            </div>
+                            <div className="cross" role="button" onClick={closeChat}>
+                                {close_icon}
+                            </div>
                         </div>
-                        <div className="cross" role="button" onClick={closeChat}>
-                            {close_icon}
+                        <div className="chat-body">
+                            <div className="messages">
+                                <p className="bot-msg">Thanks for joining us! Let's start by getting your name.</p>
+                                {messages.map((msg, index) => (
+                                    <p key={index} className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
+                                        {msg.isLoading ? <span className="loader"></span> : msg.text}
+                                    </p>
+                                ))}
+                            </div>
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    placeholder="Type your message..."
+                                    value={inputValue}
+                                    onInput={e => setInputValue(e.currentTarget.value)}
+                                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                                />
+                                <div className="send" onClick={sendMessage}>{send_icon}</div>
+                            </div>
                         </div>
                     </div>
-                    <div className="chat-body">
-                        <div className="messages">
-                            <p className="bot-msg">Thanks for joining us! Let's start by getting your name.</p>
-                            {messages.map((msg, index) => (
-                                <p key={index} className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
-                                    {msg.isLoading ? <span className="loader"></span> : msg.text}
-                                </p>
-                            ))}
-                        </div>
-                        <div className="input">
-                            <input
-                                type="text"
-                                placeholder="Type your message..."
-                                value={inputValue}
-                                onInput={e => setInputValue(e.currentTarget.value)}
-                                onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                            />
-                            <div className="send" onClick={sendMessage}>{send_icon}</div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

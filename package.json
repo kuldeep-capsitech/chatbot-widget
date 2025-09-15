@@ -15,7 +15,6 @@
 	},
 	"devDependencies": {
 		"@preact/preset-vite": "^2.10.2",
-		"@vitejs/plugin-basic-ssl": "^2.1.0",
 		"terser": "^5.43.1",
 		"typescript": "^5.9.2",
 		"vite": "^7.0.4"
