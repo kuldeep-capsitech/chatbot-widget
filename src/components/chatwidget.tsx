@@ -1,21 +1,48 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
-// import { GoogleGenAI } from "@google/genai";
 import FaqSkeleton from './skeleton';
 import { api } from '../api';
 import { bot_icon, close_icon, send_icon } from '../assets/svg';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function ChatWidget() {
-    // UI States
+
+    /*----------------------------------------- UI STATES --------------------------------------------------*/
     const [showBotIcon, setShowBotIcon] = useState(true);
     const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
     const [isFaqOpen, setIsFaqOpen] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isAgentOpen, setIsAgentOpen] = useState(false);
+    const [faqs, setFaqs] = useState<Faq[]>([]);
+    const [faqLoading, setFaqLoading] = useState(true);
+    const [faqDepth, setFaqDepth] = useState(0);
+    const [messages, setMessages] = useState<Messages[]>([
+        {
+            id: 1,
+            type: 'bot',
+            text: 'Hi! How can I help you?',
+            time: dateParser(Date.now())[1],
+            isLoading: false
+        }
+    ]);
+    const [inputValue, setInputValue] = useState('');
+    const [companyId, setCompanyId] = useState('');
+
+
+    /** --------------------------------------------- INITIALIZATION ------------------------------------ **/
+    useEffect(() => {
+        setCompanyId(document.getElementById('my-script')?.getAttribute('data-companyId') || 'hi');
+        const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
+
+        if (position === 'left') {
+            document.documentElement.style.setProperty('--host-left', '1');
+        } else {
+            document.documentElement.style.setProperty('--host-right', '1%');
+        }
+    }, []);
 
     // auto-scroll
     const scrollRef = useRef(null);
-
     useEffect(() => {
         const el = scrollRef.current;
         if (el) {
@@ -23,49 +50,32 @@ export default function ChatWidget() {
         }
     });
 
-    // Messages & Input
-    const [messages, setMessages] = useState<Messages[]>([
-        { id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
-    ]);
-    const [inputValue, setInputValue] = useState('');
 
-    // FAQ State
-    const [faqs, setFaqs] = useState<Faq[]>([]);
-    const [faqLoading, setFaqLoading] = useState(true);
-    const [faqDepth, setFaqDepth] = useState(0);
+    /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
+    const queryClient = useQueryClient();
 
-    // Google AI Setup
-    // const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_KEY });
+    const {data} = useQuery({
+        queryKey: ['faqs'],
+        queryFn: fetchFaqs,
+        enabled: companyId !== ""
+    })
+
+    const faqMutation = useMutation({
+        mutationKey: ['faq-by-question'],
+        mutationFn: fetchFaqByQuestion,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['faqs']});
+        }
+    })
 
     // Fetch initial FAQs
     async function fetchFaqs() {
         try {
-            const res = await api.get("/Chat/start", {
-                headers: {
-                    'Content-Type': 'text/plain'
-                }
+            const res = await api.post("/Chat/start", { companyId }, {
             });
-            console.log(res.data?.result)
-            setFaqs(res.data?.result?.questions);
-            setFaqLoading(false);
-            setFaqDepth(0);
-        } catch (err) {
-            console.error(err);
-        }
-    }
 
-    // signalR chat here
-    async function CustomerChat() {
-        try {
-            const res = await api.get("/Chat/start", {
-                headers: {
-                    'Content-Type': 'text/plain'
-                }
-            });
-            console.log(res.data?.result)
-            setFaqs(res.data?.result?.questions);
-            setFaqLoading(false);
-            setFaqDepth(0);
+            return res;
         } catch (err) {
             console.error(err);
         }
@@ -74,11 +84,7 @@ export default function ChatWidget() {
     // Fetch bot response for selected FAQ
     async function fetchFaqByQuestion(question: string) {
         try {
-            const res = await api.post(`/Chat/GetbyQuestion`, JSON.stringify(question), {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const res = await api.post(`/Chat/faq/answer`, { companyId, question });
             const optionsData = res.data?.result?.options;
 
             setFaqDepth(prev => prev + 1);
@@ -125,16 +131,29 @@ export default function ChatWidget() {
         }
     }
 
-    // Handle user free-text chat with Google AI
-    // async function chat() {
-    //     const response = await ai.models.generateContent({
-    //         model: "gemini-2.5-flash",
-    //         contents: inputValue
-    //     });
-    //     return response.text;
-    // }
 
-    /** ---- EVENT HANDLERS ---- **/
+    // signalR chat here
+    async function CustomerChat() {
+        try {
+            const res = await api.post("/Chat/request-live-chat", {
+                companyId,
+                customerName: "test",
+                customerEmail: "user@example.com",
+                customerPhone: "string",
+                initialQuery: "string"
+            });
+            console.log(res.data)
+            setFaqs(res.data?.result?.questions);
+            setFaqLoading(false);
+            setFaqDepth(0);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+
+
+    /** ------------------------------------ EVENT HANDLERS----------------------------------------------- ---- **/
 
     function handleFaqClick(question: string) {
         openChat();
@@ -159,7 +178,8 @@ export default function ChatWidget() {
             setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
         }
 
-        fetchFaqByQuestion(question);
+        // fetchFaqByQuestion(question);
+        faqMutation.mutateAsync(question);
     }
 
     function toggleWelcome() {
@@ -172,10 +192,16 @@ export default function ChatWidget() {
         setIsFaqOpen(true);
         setIsChatOpen(false);
         setIsAgentOpen(false);
-        fetchFaqs();
+        // fetchFaqs();
+        
+        setFaqs(data.data.result.rootQuestions);
+        setFaqLoading(false);
+        setFaqDepth(0);
+
     }
 
     function openChat() {
+        CustomerChat();
         setIsWelcomeOpen(false);
         setIsFaqOpen(false);
         setIsChatOpen(true);
@@ -224,40 +250,10 @@ export default function ChatWidget() {
         const loaderId = Date.now() + 1;
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
-
-        // Get AI response
-        // chat().then(res => {
-        //     setMessages(prev =>
-        //         prev.map(msg =>
-        //             msg.id === loaderId ? { ...msg, text: res, isLoading: false } : msg
-        //         )
-        //     );
-        // });
     }
 
-    /** ---- INITIALIZATION ---- **/
-    useEffect(() => {
-        const payload = document.getElementById('my-script')?.getAttribute('data-payload') || 'hi';
-        const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
 
-        if (position === 'left') {
-            document.documentElement.style.setProperty('--host-left', '1');
-        } else {
-            document.documentElement.style.setProperty('--host-right', '1%');
-        }
-
-        console.log('payload id: ' + payload);
-    }, []);
-
-    // useEffect(() => {
-    //     const scriptEl = document.getElementById('my-script');
-    //     const position = scriptEl?.getAttribute('data-position') || 'right';
-
-    //     document.documentElement.classList.remove('position-left', 'position-right');
-    //     document.documentElement.classList.add(`position-${position}`);
-    // }, []);
-
-    /** ---- RENDER ---- **/
+    /** ------------------------------------------ RENDER ----------------------------------------------- **/
     return (
         <div id="chat-root">
             {/* Floating Chat Icon */}
@@ -344,8 +340,8 @@ export default function ChatWidget() {
                                         </div>
                                     ) : (!(msg.text === "") ? (
                                         <>
-                                            <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
-                                                {msg.isLoading ? <span className="loader"></span> : msg.text}
+                                            <p className={msg.type === 'bot' ? (faqMutation.isPending ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
+                                                {faqMutation.isPending ? <span className="loader"></span> : msg.text}
                                             </p>
                                             <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>
                                         </>

@@ -1,5 +1,6 @@
 import { h, render } from 'preact'
 import ChatWidget from './components/chatwidget.js';
+import App from './app.js';
 
 
 const css = `
@@ -34,7 +35,7 @@ document.body.appendChild(widgetContainer);
 
 // Render the component into the Shadow DOM
 // Use the widgetRoot as the container for Preact
-render(h(ChatWidget, null), widgetRoot);
+render(h(App, null), widgetRoot);
 
 
 

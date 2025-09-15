@@ -4,11 +4,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [preact(), basicSsl()],
-	server: {
-		https: true,
-		host: true // Optional: exposes to LAN
-	},
+	plugins: [preact()],
 	build: {
 		lib: {
 			entry: 'src/index.tsx',
