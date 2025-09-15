@@ -6,7 +6,7 @@ import { bot_icon, close_icon, send_icon } from '../assets/svg';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 export default function ChatWidget() {
-    // UI States
+    //---------------------------------------- UI States ----------------------------------------
     const [showBotIcon, setShowBotIcon] = useState(true);
     const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
     const [isFaqOpen, setIsFaqOpen] = useState(false);
@@ -14,11 +14,8 @@ export default function ChatWidget() {
     const [isAgentOpen, setIsAgentOpen] = useState(false);
     const [companyId, setCompanyId] = useState('');
 
-
-
-    // auto-scroll
+    // ---------------------------------------- auto-scroll ----------------------------------------
     const scrollRef = useRef(null);
-
     useEffect(() => {
         const el = scrollRef.current;
         if (el) {
@@ -26,13 +23,13 @@ export default function ChatWidget() {
         }
     });
 
-    // Messages & Input
+    //---------------------------------------- Messages & Input ----------------------------------------
     const [messages, setMessages] = useState<Messages[]>([
         { id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }
     ]);
     const [inputValue, setInputValue] = useState('');
 
-    // FAQ State
+    // ---------------------------------------- FAQ State ----------------------------------------
     const [faqs, setFaqs] = useState<Faq[]>([]);
     const [faqDepth, setFaqDepth] = useState(0);
 
@@ -53,8 +50,8 @@ export default function ChatWidget() {
 
 
 
-    // TanStack Query for initial FAQs
-    // TanStack Query for initial FAQs
+    //---------------------------------------- TanStack Query for initial FAQs ----------------------------------------
+
     const { data: initialFaqsData, isLoading: faqLoading, refetch: refetchFaqs } = useQuery({
         queryKey: ["faqs", companyId], // Include companyId for cache specificity
         queryFn: async () => {
@@ -74,11 +71,6 @@ export default function ChatWidget() {
         retry: 2,
     });
 
-
-
-
-
-
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------
     useEffect(() => {
         if (initialFaqsData) {
@@ -87,13 +79,13 @@ export default function ChatWidget() {
         }
     }, [initialFaqsData]);
 
-    // TanStack Query mutation for FAQ by question
+    //---------------------------------------- TanStack Query mutation for FAQ by question ----------------------------------------
 
     const fetchFaqMutation = useMutation({
         mutationFn: async (question: string) => {
             const res = await api.post(
                 `/Chat/faq/answer`,
-                { question, companyId }, 
+                { question, companyId },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -105,7 +97,7 @@ export default function ChatWidget() {
         onSuccess: (data) => {
             setFaqDepth((prev) => prev + 1);
 
-            // Add bot response message
+            //---------------------------------------- Add bot response message ----------------------------------------
             const botMessage = {
                 id: Date.now(),
                 type: "bot",
@@ -115,7 +107,7 @@ export default function ChatWidget() {
             };
             setMessages((prev) => [...prev, botMessage]);
 
-            // Handle options or back-to-start
+            //---------------------------------------- Handle options or back-to-start ----------------------------------------
             const optionsData = data.options;
             if (!data.answer && (!optionsData || optionsData.length === 0)) {
                 const backToStartMessage = {
@@ -149,15 +141,18 @@ export default function ChatWidget() {
         },
     });
 
-    // signalR chat here
+    //---------------------------------------- signalR chat here ----------------------------------------
     async function CustomerChat() {
         try {
-            const res = await api.get("/Chat/start", {
-                headers: {
-                    'Content-Type': 'text/plain'
-                }
+            const res = await api.post("/Chat/request-live-chat", {
+                companyId,
+                "customerName": "string",
+                "customerEmail": "user@example.com",
+                "customerPhone": "string",
+                "initialQuery": "string"
             });
-            console.log(res.data?.result)
+            console.log(res.data);
+
             setFaqs(res.data?.result?.questions);
             setFaqDepth(0);
         } catch (err) {
@@ -165,7 +160,7 @@ export default function ChatWidget() {
         }
     }
 
-    /** ---- EVENT HANDLERS ---- **/
+    /**---------------------------------------- ---- EVENT HANDLERS -------------------------------------------- **/
 
     function handleFaqClick(question: string) {
         openChat();
@@ -236,7 +231,7 @@ export default function ChatWidget() {
         setMessages([{ id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
     }
 
-    // Handle user input message send
+    //---------------------------------------- Handle user input message send ----------------------------------------
     function sendMessage() {
         if (!inputValue.trim()) return;
 
@@ -256,21 +251,17 @@ export default function ChatWidget() {
         setMessages(prev => [...prev, loadingMessage]);
 
     }
-
-    /** ---- INITIALIZATION ---- **/
-
-
-    /** ---- RENDER ---- **/
+    /** -------------------------------------------- RENDER  -------------------------------------------- **/
     return (
         <div id="chat-root">
-            {/* Floating Chat Icon */}
+            {/* ---------------------------------------- Floating Chat Icon ---------------------------------------- */}
             {showBotIcon && (
                 <div className="chat-icon" role="button" onClick={toggleWelcome}>
                     {bot_icon}
                 </div>
             )}
 
-            {/* Welcome Popup */}
+            {/* ---------------------------------------- Welcome Popup ---------------------------------------- */}
             {isWelcomeOpen && (
                 <div className="welcome-box fly-y">
                     <div className="welcome">
@@ -293,7 +284,7 @@ export default function ChatWidget() {
             )
             }
 
-            {/* FAQ Section */}
+            {/* ---------------------------------------- FAQ Section ---------------------------------------- */}
             {
                 isFaqOpen && (
                     <div className="faq-box">
@@ -323,7 +314,7 @@ export default function ChatWidget() {
                 )
             }
 
-            {/* Chat Section */}
+            {/* ---------------------------------------- Chat Section ----------------------------------------*/}
             {
                 isChatOpen && (
                     <div className="chat-dialog fly-x">
@@ -338,7 +329,7 @@ export default function ChatWidget() {
                         </div>
 
                         <div className="chat-body">
-                            {/* Messages */}
+                            {/*---------------------------------------- Messages ----------------------------------------*/}
                             <div className="messages" ref={scrollRef}>
                                 {messages.map((msg, index) => (
                                     <div key={index}>
@@ -369,7 +360,7 @@ export default function ChatWidget() {
                                 ))}
                             </div>
 
-                            {/* Input */}
+                            {/*---------------------------------------- Input ----------------------------------------*/}
                             <div className="input">
                                 <input
                                     type="text"
@@ -387,7 +378,7 @@ export default function ChatWidget() {
                 )
             }
 
-            {/* Agent Section */}
+            {/* ---------------------------------------- Agent Section ---------------------------------------- */}
             {
                 isAgentOpen && (
                     <div className="chat-dialog fly-x">

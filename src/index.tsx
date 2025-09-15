@@ -1,7 +1,6 @@
 import { h, render } from 'preact';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ChatWidget from './components/chatwidget.js';
-import App from './app.js';
 
 const queryClient = new QueryClient();
 
