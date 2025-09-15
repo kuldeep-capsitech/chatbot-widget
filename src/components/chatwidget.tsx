@@ -56,7 +56,7 @@ export default function ChatWidget() {
         queryKey: ["faqs", companyId], // Include companyId for cache specificity
         queryFn: async () => {
             const res = await api.post(
-                "/Chat/start",
+                "/Faq/GetFaqStats",
                 { companyId },
                 {
                     headers: {
