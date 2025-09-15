@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { dateParser } from "@biswarup598/date-parser";
-// import { GoogleGenAI } from "@google/genai";
 import FaqSkeleton from './skeleton';
 import { api } from '../api';
 import { bot_icon, close_icon, send_icon } from '../assets/svg';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 export default function ChatWidget() {
     // UI States
@@ -12,6 +12,9 @@ export default function ChatWidget() {
     const [isFaqOpen, setIsFaqOpen] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isAgentOpen, setIsAgentOpen] = useState(false);
+    const [companyId, setCompanyId] = useState('');
+
+
 
     // auto-scroll
     const scrollRef = useRef(null);
@@ -31,108 +34,138 @@ export default function ChatWidget() {
 
     // FAQ State
     const [faqs, setFaqs] = useState<Faq[]>([]);
-    const [faqLoading, setFaqLoading] = useState(true);
     const [faqDepth, setFaqDepth] = useState(0);
 
-    // Google AI Setup
-    // const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_KEY });
 
-    // Fetch initial FAQs
-    async function fetchFaqs() {
-        try {
-            const res = await api.get("/Chat/start", {
-                headers: {
-                    'Content-Type': 'text/plain'
-                }
-            });
-            console.log(res.data?.result)
-            setFaqs(res.data?.result?.questions);
-            setFaqLoading(false);
-            setFaqDepth(0);
-        } catch (err) {
-            console.error(err);
+    useEffect(() => {
+        const commingCompanyId = document.getElementById('my-script')?.getAttribute('data-payload') || 'Please Provide Company Id';
+        const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
+
+        if (position === 'left') {
+            document.documentElement.style.setProperty('--host-left', '1');
+        } else {
+            document.documentElement.style.setProperty('--host-right', '1%');
         }
-    }
 
-    // signalR chat here
-    async function CustomerChat() {
-        try {
-            const res = await api.get("/Chat/start", {
-                headers: {
-                    'Content-Type': 'text/plain'
+        console.log('payload id: ' + commingCompanyId);
+        setCompanyId(commingCompanyId);
+    }, []);
+
+
+
+    // TanStack Query for initial FAQs
+    const { data: initialFaqsData, isLoading: faqLoading, refetch: refetchFaqs } = useQuery({
+        queryKey: ["faqs", "start"],
+        queryFn: async () => {
+            const res = await api.post(
+                "/Chat/start",
+                { companyId },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
-            });
-            console.log(res.data?.result)
-            setFaqs(res.data?.result?.questions);
-            setFaqLoading(false);
+            );
+
+            return res.data?.result;
+        },
+        enabled: !!companyId,
+        staleTime: 1000 * 60 * 5,
+        retry: 2,
+    });
+
+
+
+
+
+
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    useEffect(() => {
+        if (initialFaqsData) {
+            setFaqs(initialFaqsData.rootQuestions);
             setFaqDepth(0);
-        } catch (err) {
-            console.error(err);
         }
-    }
+    }, [initialFaqsData]);
 
-    // Fetch bot response for selected FAQ
-    async function fetchFaqByQuestion(question: string) {
-        try {
-            const res = await api.post(`/Chat/GetbyQuestion`, JSON.stringify(question), {
-                headers: {
-                    'Content-Type': 'application/json'
+    // TanStack Query mutation for FAQ by question
+
+    const fetchFaqMutation = useMutation({
+        mutationFn: async (question: string) => {
+            const res = await api.post(
+                `/Chat/faq/answer`,
+                { question, companyId },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 }
-            });
-            const optionsData = res.data?.result?.options;
-
-            setFaqDepth(prev => prev + 1);
+            );
+            return res.data?.result;
+        },
+        onSuccess: (data) => {
+            setFaqDepth((prev) => prev + 1);
 
             // Add bot response message
             const botMessage = {
                 id: Date.now(),
-                type: 'bot',
-                text: res.data?.result?.answer,
+                type: "bot",
+                text: data.answer,
                 time: dateParser(Date.now())[1],
-                isLoading: false
+                isLoading: false,
             };
-            setMessages(prev => [...prev, botMessage]);
+            setMessages((prev) => [...prev, botMessage]);
 
-            // Add inline FAQ options in chat, or Back to Start button if no options or no text and options
-            if (!res.data?.result?.answer && (!optionsData || optionsData.length === 0)) {
+            // Handle options or back-to-start
+            const optionsData = data.options;
+            if (!data.answer && (!optionsData || optionsData.length === 0)) {
                 const backToStartMessage = {
                     id: Date.now() + 1,
-                    type: 'back-to-start',
+                    type: "back-to-start",
                     time: dateParser(Date.now())[1],
-                    isLoading: false
+                    isLoading: false,
                 };
-                setMessages(prev => [...prev, backToStartMessage]);
+                setMessages((prev) => [...prev, backToStartMessage]);
             } else if (!optionsData || optionsData.length === 0) {
                 const backToStartMessage = {
                     id: Date.now() + 1,
-                    type: 'back-to-start',
+                    type: "back-to-start",
                     time: dateParser(Date.now())[1],
-                    isLoading: false
+                    isLoading: false,
                 };
-                setMessages(prev => [...prev, backToStartMessage]);
+                setMessages((prev) => [...prev, backToStartMessage]);
             } else if (optionsData && optionsData.length > 0) {
                 const faqOptionsMessage = {
                     id: Date.now() + 1,
-                    type: 'faq-options',
+                    type: "faq-options",
                     options: optionsData,
                     time: dateParser(Date.now())[1],
-                    isLoading: false
+                    isLoading: false,
                 };
-                setMessages(prev => [...prev, faqOptionsMessage]);
+                setMessages((prev) => [...prev, faqOptionsMessage]);
             }
+        },
+        onError: (err) => {
+            console.error(err);
+        },
+    });
+
+    // signalR chat here
+    async function CustomerChat() {
+        try {
+            const res = await api.post("/Chat/request-live-chat", {
+                companyId,
+                "customerName": "string",
+                "customerEmail": "user@example.com",
+                "customerPhone": "string",
+                "initialQuery": "string"
+            });
+            console.log(res.data)
+            setFaqs(res.data?.result?.questions);
+            setFaqDepth(0);
         } catch (err) {
             console.error(err);
         }
     }
-
-    // Handle user free-text chat with Google AI
-    // async function chat() {
-    //     const response = await ai.models.generateContent({
-    //         model: "gemini-2.5-flash",
-    //         contents: inputValue
-    //     });
-    //     return response.text;
-    // }
 
     /** ---- EVENT HANDLERS ---- **/
 
@@ -159,7 +192,7 @@ export default function ChatWidget() {
             setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
         }
 
-        fetchFaqByQuestion(question);
+        fetchFaqMutation.mutate(question);
     }
 
     function toggleWelcome() {
@@ -172,7 +205,7 @@ export default function ChatWidget() {
         setIsFaqOpen(true);
         setIsChatOpen(false);
         setIsAgentOpen(false);
-        fetchFaqs();
+        refetchFaqs();
     }
 
     function openChat() {
@@ -192,7 +225,6 @@ export default function ChatWidget() {
     }
 
     const handleFaqBackToStart = () => {
-        setFaqLoading(true);
         setFaqDepth(0);
         setShowBotIcon(true);
         closeChat();
@@ -225,29 +257,7 @@ export default function ChatWidget() {
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
-        // Get AI response
-        // chat().then(res => {
-        //     setMessages(prev =>
-        //         prev.map(msg =>
-        //             msg.id === loaderId ? { ...msg, text: res, isLoading: false } : msg
-        //         )
-        //     );
-        // });
     }
-
-    /** ---- INITIALIZATION ---- **/
-    useEffect(() => {
-        const payload = document.getElementById('my-script')?.getAttribute('data-payload') || 'hi';
-        const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
-
-        if (position === 'left') {
-            document.documentElement.style.setProperty('--host-left', '1%');
-        } else {
-            document.documentElement.style.setProperty('--host-right', '1%');
-        }
-
-        console.log('payload id: ' + payload);
-    }, []);
 
     /** ---- RENDER ---- **/
     return (
@@ -268,7 +278,7 @@ export default function ChatWidget() {
                     </div>
                     <div className="welcome-2">
                         <div className="faq" onClick={openFaq}>FAQ</div>
-                        <div className="talk" onClick={openChat}>Let's Talk</div>
+                        <div className="talk" onClick={() => { openChat(), CustomerChat() }}>Let's Talk</div>
                     </div>
                 </div>
             )}
@@ -355,9 +365,9 @@ export default function ChatWidget() {
                                 onInput={e => setInputValue(e.currentTarget.value)}
                                 onKeyDown={e => e.key === 'Enter' && sendMessage()}
                             />
-                            <button className="send" onClick={sendMessage}>
+                            <div className="send" onClick={sendMessage}>
                                 {send_icon}
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -392,7 +402,7 @@ export default function ChatWidget() {
                                 onInput={e => setInputValue(e.currentTarget.value)}
                                 onKeyDown={e => e.key === 'Enter' && sendMessage()}
                             />
-                            <button className="send" onClick={sendMessage}>{send_icon}</button>
+                            <div className="send" onClick={sendMessage}>{send_icon}</div>
                         </div>
                     </div>
                 </div>

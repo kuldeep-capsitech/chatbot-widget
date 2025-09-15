@@ -1,7 +1,7 @@
 :host {
   position: fixed;
   bottom: 1rem;
-  left: var(--host-left);
+  left: calc(var(--host-left) * 2%);
   right: var(--host-right);
   z-index: 9999;
 }
@@ -19,6 +19,7 @@
   box-sizing: border-box;
   transition: all 0.3s ease-in-out;
   position: relative;
+  background-color: rgba(255, 255, 255, 0.877);
   z-index: 10000000;
 }
 
@@ -146,11 +147,13 @@
 }
 
 .bot-time {
+  letter-spacing: 1px;
   display: block;
   font-size: 10px;
   margin-left: 15px;
 }
 .user-time {
+  letter-spacing: 1px;
   display: flex;
   font-size: 10px;
   /* margin-left: 15px; */
@@ -341,6 +344,8 @@
 }
 
 .faq-options-li {
+  position: relative;
+  left: calc(var(--host-left) * 10%);
   padding: 0.5rem;
   border-radius: 10px;
   position: absolute;
@@ -391,6 +396,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  left: calc(var(--host-left) * 10%);
 }
 
 .user-msg {
@@ -513,6 +520,7 @@
   border-radius: 50%;
   animation: l5 1s infinite linear alternate;
 }
+
 @keyframes l5 {
   0% {
     box-shadow: 15px 0 #000, -15px 0 #0002;
@@ -613,7 +621,7 @@
 }
 
 /* Larger devices scaling */
-@media (min-width: 391px) and (max-width: 768px) {
+@media (min-width: 391px) and (max-width: 455px) {
   .chat-dialog {
     width: 90vw;
     height: 70vh;
@@ -654,6 +662,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  position: relative;
+  left: calc(var(--host-left) * 5%);
 }
 
 /* Skeleton li styling */
@@ -698,6 +708,11 @@
   .input input {
     color: #fff;
     background: transparent;
+  }
+
+  .loader {
+    color: white;
+    background-color: #3c3c3c;
   }
 }
 
