@@ -29,7 +29,6 @@ export default function ChatWidget() {
     const [inputValue, setInputValue] = useState('');
     const [companyId, setCompanyId] = useState('');
 
-
     /** --------------------------------------------- INITIALIZATION ------------------------------------ **/
     useEffect(() => {
         setCompanyId(document.getElementById('my-script')?.getAttribute('data-companyId') || 'hi');
@@ -50,7 +49,6 @@ export default function ChatWidget() {
             el.scrollTop = el.scrollHeight;
         }
     }, [messages.length]);
-
 
     /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
     const queryClient = useQueryClient();
@@ -75,7 +73,7 @@ export default function ChatWidget() {
             const botMessage = {
                 id: Date.now(),
                 type: 'bot',
-                text: res.data?.result?.answer,
+                text: res.data?.result?.answer || "   : (   ",
                 time: dateParser(Date.now())[1],
                 isLoading: false
             };
@@ -151,8 +149,6 @@ export default function ChatWidget() {
         }
     }
 
-
-
     /** ------------------------------------ EVENT HANDLERS----------------------------------------------- ---- **/
 
     function handleFaqClick(question: string) {
@@ -207,7 +203,6 @@ export default function ChatWidget() {
         // fetchFaqs();
 
         setFaqDepth(0);
-
     }
 
     function openChat() {
@@ -265,7 +260,6 @@ export default function ChatWidget() {
 
         setInputValue('');
     }
-
 
     /** ------------------------------------------ RENDER ----------------------------------------------- **/
     return (
