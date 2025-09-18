@@ -19,7 +19,7 @@ export default function ChatWidget() {
     const [touched, setTouched] = useState(false);
     const [messages, setMessages] = useState<Messages[]>([
         {
-            id: 1,
+            id: "",
             type: 'bot',
             text: 'Hi! How can I help you?',
             time: dateParser(Date.now())[1],
@@ -73,7 +73,7 @@ export default function ChatWidget() {
 
             // replace loading with bot message
             const botMessage = {
-                id: Date.now(),
+                id: Date.now().toString(),
                 type: 'bot',
                 text: res.data?.result?.answer,
                 time: dateParser(Date.now())[1],
@@ -84,7 +84,7 @@ export default function ChatWidget() {
             // Add inline FAQ options in chat, or Back to Start button if no options or no text and options
             if (!res.data?.result?.answer && (!optionsData || optionsData.length === 0)) {
                 const backToStartMessage = {
-                    id: Date.now() + 1,
+                    id: (Date.now() + 1).toString(),
                     type: 'back-to-start',
                     time: dateParser(Date.now())[1],
                     isLoading: false
@@ -92,7 +92,7 @@ export default function ChatWidget() {
                 setMessages(prev => [...prev, backToStartMessage]);
             } else if (!optionsData || optionsData.length === 0) {
                 const backToStartMessage = {
-                    id: Date.now() + 1,
+                    id: (Date.now() + 1).toString(),
                     type: 'back-to-start',
                     time: dateParser(Date.now())[1],
                     isLoading: false
@@ -100,7 +100,7 @@ export default function ChatWidget() {
                 setMessages(prev => [...prev, backToStartMessage]);
             } else if (optionsData && optionsData.length > 0) {
                 const faqOptionsMessage = {
-                    id: Date.now() + 1,
+                    id: (Date.now() + 1).toString(),
                     type: 'faq-options',
                     options: optionsData,
                     time: dateParser(Date.now())[1],
@@ -166,13 +166,13 @@ export default function ChatWidget() {
             isLoading: false
         };
 
-        // setMessages(prev => {
-        //     if (isChatOpen) {
-        //         return [...prev.slice(0, -1), userMessage];
-        //     } else {
-        //         return [...prev, userMessage];
-        //     }
-        // });
+        setMessages(prev => {
+            if (isChatOpen) {
+                return [...prev.slice(0, -1), userMessage];
+            } else {
+                return [...prev, userMessage];
+            }
+        });
 
         setInputValue('');
 
@@ -180,7 +180,7 @@ export default function ChatWidget() {
             setFaqs(prevFaqs => prevFaqs.filter(f => f.id !== faq.id));
         }
 
-        const loaderId = Date.now() + 1;
+        const loaderId = (Date.now() + 1).toString();
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
@@ -240,7 +240,7 @@ export default function ChatWidget() {
         setIsAgentOpen(false);
         setIsChatOpen(false);
         setShowBotIcon(true);
-        setMessages([{ id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
+        setMessages([{ id: "", type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
     }
 
     // Handle user input message send
@@ -248,7 +248,7 @@ export default function ChatWidget() {
         if (!inputValue.trim()) return;
 
         const newMessage = {
-            id: Date.now(),
+            id: Date.now().toString(),
             type: 'user',
             text: inputValue,
             time: dateParser(Date.now())[1],
@@ -257,7 +257,7 @@ export default function ChatWidget() {
         setMessages(prev => [...prev, newMessage]);
 
         // Add loading indicator for bot response
-        const loaderId = Date.now() + 1;
+        const loaderId = (Date.now() + 1).toString();
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
