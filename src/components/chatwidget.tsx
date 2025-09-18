@@ -55,15 +55,15 @@ export default function ChatWidget() {
     /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
     const queryClient = useQueryClient();
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isRefetchError, isLoadingError } = useQuery({
         queryKey: ['faqs'],
         queryFn: fetchFaqs,
         enabled: touched
     })
 
     const faqMutation = useMutation({
-        mutationFn: async (question: string) => {
-            const res = await api.post(`/Chat/GetFaqByQuestion`, { companyId, question });
+        mutationFn: async (questionId: string) => {
+            const res = await api.post(`/Chat/GetFaqByQuestion`, { companyId, questionId });
             return res;
         },
         onSuccess: (res) => {
@@ -155,36 +155,36 @@ export default function ChatWidget() {
 
     /** ------------------------------------ EVENT HANDLERS----------------------------------------------- ---- **/
 
-    function handleFaqClick(question: string) {
+    function handleFaqClick(faq:Faq) {
         openChat();
 
         const userMessage = {
-            id: Date.now(),
+            id: faq.id,
             type: 'user',
-            text: question,
+            text: faq.question,
             time: dateParser(Date.now())[1],
             isLoading: false
         };
 
-        setMessages(prev => {
-            if (isChatOpen) {
-                return [...prev.slice(0, -1), userMessage];
-            } else {
-                return [...prev, userMessage];
-            }
-        });
+        // setMessages(prev => {
+        //     if (isChatOpen) {
+        //         return [...prev.slice(0, -1), userMessage];
+        //     } else {
+        //         return [...prev, userMessage];
+        //     }
+        // });
 
         setInputValue('');
 
         if (isFaqOpen) {
-            setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
+            setFaqs(prevFaqs => prevFaqs.filter(f => f.id !== faq.id));
         }
 
         const loaderId = Date.now() + 1;
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
-        faqMutation.mutate(question);
+        faqMutation.mutate(faq.id);
     }
 
     function toggleWelcome() {
@@ -296,11 +296,11 @@ export default function ChatWidget() {
                 <div className="faq-box">
                     <div className="faq-options">
                         <ul className="faq-options-li">
-                            {faqLoading ? (
+                            {(isLoadingError || isRefetchError) ? <li className="sorry">It's not you, it's us</li> : faqLoading ? (
                                 <FaqSkeleton />
                             ) : (
                                 faqs.map((faq, index) => (
-                                    <li key={index} onClick={() => handleFaqClick(faq.question)}>
+                                    <li key={index} onClick={() => handleFaqClick(faq)}>
                                         {faq.question}
                                     </li>
                                 ))
@@ -340,7 +340,7 @@ export default function ChatWidget() {
                                     {msg.type === 'faq-options' ? (
                                         <div className="faq-inline-options">
                                             {msg.options && msg.options.map((option: Faq, idx: number) => (
-                                                <button key={idx} className="faq-inline-btn" onClick={() => handleFaqClick(option.question)}>
+                                                <button key={idx} className="faq-inline-btn" onClick={() => handleFaqClick(option)}>
                                                     {option.question}
                                                 </button>
                                             ))}

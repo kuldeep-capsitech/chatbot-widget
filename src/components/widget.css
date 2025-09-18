@@ -802,3 +802,9 @@
     background: #fff;
   }
 }
+
+.sorry{
+  color: rgb(212, 35, 35);
+  font-weight: 800;
+  background: transparent;
+}
