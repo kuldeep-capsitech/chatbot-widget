@@ -73,7 +73,7 @@ export default function ChatWidget() {
             const botMessage = {
                 id: Date.now(),
                 type: 'bot',
-                text: res.data?.result?.answer || "Sorry I don't know the answer! ",
+                text: res.data?.result?.answer || "Sorry I don't know the answer ",
                 time: dateParser(Date.now())[1],
                 isLoading: false
             };
