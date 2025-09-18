@@ -727,7 +727,13 @@
 /* New */
 
 .back-to-start:hover {
-  /* background: linear-gradient(270deg, #a7befe 0%, #c7c7c7 100%); */
+  background: linear-gradient(
+    270deg,
+    #a7befe 0%,
+    #6e6ec5 36.11%,
+    #5347aa 64.88%,
+    #43319a 100%
+  );
   color: white;
 }
 
@@ -760,7 +766,10 @@
     background: #2c2c2c;
     color: #fff;
   }
-
+  .back-to-start:hover {
+    background: transparent;
+    color: white;
+  }
   .welcome,
   .bot-msg {
     background: #3c3c3c;
