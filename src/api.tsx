@@ -6,7 +6,7 @@ const api = axios.create({
 
 api.interceptors.request.use(config => {
     if (import.meta.env.VITE_TOKEN) {
-        config.headers['Authorization'] = `Bearer ${import.meta.env.VITE_TOKEN}`
+        // config.headers['Authorization'] = `Bearer ${import.meta.env.VITE_TOKEN}`
         config.withCredentials = true
     }
     return config
