@@ -1,7 +1,7 @@
 :host {
   position: fixed;
   bottom: 1rem;
-  left: calc(var(--host-left)*2%);
+  left: calc(var(--host-left) * 2%);
   right: var(--host-right);
   z-index: 9999;
 }
@@ -35,7 +35,7 @@
   right: var(--host-right);
   left: var(--host-left);
   width: 400px;
-  height: 618px;
+  height: 688px;
   background: white;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -283,8 +283,9 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
-  letter-spacing: 0%;
   margin-bottom: 4px;
+
+  /* letter-spacing: 0.5px; */
 }
 
 .faq-box {
@@ -345,7 +346,7 @@
 
 .faq-options-li {
   position: relative;
-  left: calc(var(--host-left)*10%);
+  left: calc(var(--host-left) * 10%);
   padding: 0.5rem;
   border-radius: 10px;
   position: absolute;
@@ -369,10 +370,13 @@
   font-size: 14px;
   line-height: 22px;
   letter-spacing: 0%;
-  text-align: right;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  max-width: 250px;
+  /* text-align: justify; */
+  /* letter-spacing: 0.5px; */
 }
 
 .faq-options-li li:hover {
@@ -397,12 +401,13 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  left: calc(var(--host-left)*10%);
+  left: calc(var(--host-left) * 10%);
 }
 
 .user-msg {
   min-width: 15px;
   width: fit-content;
+  max-width: 290px;
   padding: 10px;
   border: 1px solid #43319a;
   border-top-left-radius: 16px;
@@ -410,7 +415,9 @@
   border-bottom-left-radius: 16px;
   margin-left: auto;
   margin-bottom: 2.5px;
-  /* text-align: right; */
+
+  /* letter-spacing: 0.5px; */
+  /* text-align: justify; */
 }
 
 .faq-inline-btn {
@@ -662,7 +669,7 @@
   flex-direction: column;
   align-items: flex-end;
   position: relative;
-  left: calc(var(--host-left)*5%);
+  left: calc(var(--host-left) * 5%);
 }
 
 /* Skeleton li styling */
@@ -709,7 +716,7 @@
     background: transparent;
   }
 
-  .loader{
+  .loader {
     color: white;
     background-color: #3c3c3c;
   }
@@ -741,4 +748,57 @@
   flex-direction: column;
   gap: 0.5rem;
   align-items: flex-end;
+}
+
+/* New loder */
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .chat-dialog {
+    background: #2c2c2c;
+    color: #fff;
+  }
+
+  .welcome,
+  .bot-msg {
+    background: #3c3c3c;
+    color: #fff;
+  }
+
+  .input {
+    background: #3c3c3c;
+    border-color: #4c4c4c;
+  }
+
+  .input input {
+    color: #fff;
+    background: transparent;
+  }
+
+  .loader {
+    animation: l5-dark 1s infinite linear alternate;
+  }
+
+  .loader-wrapper {
+    background-color: #3c3c3c;
+  }
+}
+
+@keyframes l5-dark {
+  0% {
+    box-shadow: 15px 0 #fff, -15px 0 rgba(255, 255, 255, 0.2);
+    background: #fff;
+  }
+  33% {
+    box-shadow: 15px 0 #fff, -15px 0 rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2);
+  }
+  66% {
+    box-shadow: 15px 0 rgba(255, 255, 255, 0.2), -15px 0 #fff;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 15px 0 rgba(255, 255, 255, 0.2), -15px 0 #fff;
+    background: #fff;
+  }
 }
