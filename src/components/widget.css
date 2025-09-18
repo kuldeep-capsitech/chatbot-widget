@@ -35,7 +35,7 @@
   right: var(--host-right);
   left: var(--host-left);
   width: 400px;
-  height: 618px;
+  height: 688px;
   background: white;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -283,8 +283,9 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
-  letter-spacing: 0%;
   margin-bottom: 4px;
+
+  /* letter-spacing: 0.5px; */
 }
 
 .faq-box {
@@ -369,10 +370,13 @@
   font-size: 14px;
   line-height: 22px;
   letter-spacing: 0%;
-  text-align: right;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  max-width: 250px;
+  /* text-align: justify; */
+  /* letter-spacing: 0.5px; */
 }
 
 .faq-options-li li:hover {
@@ -403,6 +407,7 @@
 .user-msg {
   min-width: 15px;
   width: fit-content;
+  max-width: 290px;
   padding: 10px;
   border: 1px solid #43319a;
   border-top-left-radius: 16px;
@@ -410,7 +415,9 @@
   border-bottom-left-radius: 16px;
   margin-left: auto;
   margin-bottom: 2.5px;
-  /* text-align: right; */
+
+  /* letter-spacing: 0.5px; */
+  /* text-align: justify; */
 }
 
 .faq-inline-btn {

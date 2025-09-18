@@ -56,7 +56,7 @@ export default function ChatWidget() {
         queryKey: ["faqs", companyId], // Include companyId for cache specificity
         queryFn: async () => {
             const res = await api.post(
-                "/Faq/GetFaqStats",
+                "/Chat/StartChat",
                 { companyId },
                 {
                     headers: {
@@ -84,7 +84,7 @@ export default function ChatWidget() {
     const fetchFaqMutation = useMutation({
         mutationFn: async (question: string) => {
             const res = await api.post(
-                `/Chat/faq/answer`,
+                `/Chat/GetFaqByQuestion`,
                 { question, companyId },
                 {
                     headers: {
