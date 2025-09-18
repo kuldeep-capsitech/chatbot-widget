@@ -16,6 +16,7 @@ export default function ChatWidget() {
     const [faqs, setFaqs] = useState<Faq[]>([]);
     const [faqLoading, setFaqLoading] = useState(true);
     const [faqDepth, setFaqDepth] = useState(0);
+    const [touched, setTouched] = useState(false);
     const [messages, setMessages] = useState<Messages[]>([
         {
             id: 1,
@@ -35,7 +36,7 @@ export default function ChatWidget() {
         const position = document.getElementById('my-script')?.getAttribute('data-position') || 'right';
 
         if (position === 'left') {
-            document.documentElement.style.setProperty('--host-left', '1');
+            document.documentElement.style.setProperty('--host-left', '1%');
         } else {
             document.documentElement.style.setProperty('--host-right', '1%');
         }
@@ -48,48 +49,29 @@ export default function ChatWidget() {
         if (el) {
             el.scrollTop = el.scrollHeight;
         }
-    });
+    }, [messages.length]);
 
 
     /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
     const queryClient = useQueryClient();
 
-    const {data} = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['faqs'],
         queryFn: fetchFaqs,
-        enabled: companyId !== ""
+        enabled: touched
     })
 
     const faqMutation = useMutation({
-        mutationKey: ['faq-by-question'],
-        mutationFn: fetchFaqByQuestion,
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['faqs']});
-        }
-    })
-
-    // Fetch initial FAQs
-    async function fetchFaqs() {
-        try {
-            const res = await api.post("/Chat/start", { companyId }, {
-            });
-
+        mutationFn: async (question: string) => {
+            const res = await api.post(`/Chat/GetFaqByQuestion`, { companyId, question });
             return res;
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    // Fetch bot response for selected FAQ
-    async function fetchFaqByQuestion(question: string) {
-        try {
-            const res = await api.post(`/Chat/faq/answer`, { companyId, question });
+        },
+        onSuccess: (res) => {
             const optionsData = res.data?.result?.options;
 
             setFaqDepth(prev => prev + 1);
 
-            // Add bot response message
+            // replace loading with bot message
             const botMessage = {
                 id: Date.now(),
                 type: 'bot',
@@ -97,7 +79,7 @@ export default function ChatWidget() {
                 time: dateParser(Date.now())[1],
                 isLoading: false
             };
-            setMessages(prev => [...prev, botMessage]);
+            setMessages(prev => [...prev.slice(0, -1), botMessage]);
 
             // Add inline FAQ options in chat, or Back to Start button if no options or no text and options
             if (!res.data?.result?.answer && (!optionsData || optionsData.length === 0)) {
@@ -126,11 +108,29 @@ export default function ChatWidget() {
                 };
                 setMessages(prev => [...prev, faqOptionsMessage]);
             }
+
+            queryClient.invalidateQueries({ queryKey: ['faqs'] });
+        }
+    })
+
+    useEffect(() => {
+        if (!isLoading && data) {
+            setFaqs(data?.data?.result?.rootQuestions || []);
+            setFaqLoading(false);
+        }
+    }, [data, isLoading]);
+
+    // Fetch initial FAQs
+    async function fetchFaqs() {
+        try {
+            const res = await api.post("/Chat/StartChat", { companyId }, {
+            });
+
+            return res;
         } catch (err) {
             console.error(err);
         }
     }
-
 
     // signalR chat here
     async function CustomerChat() {
@@ -166,11 +166,13 @@ export default function ChatWidget() {
             isLoading: false
         };
 
-        if (isChatOpen) {
-            setMessages(prev => [...prev.slice(0, -1), userMessage]);
-        } else {
-            setMessages(prev => [...prev, userMessage]);
-        }
+        setMessages(prev => {
+            if (isChatOpen) {
+                return [...prev.slice(0, -1), userMessage];
+            } else {
+                return [...prev, userMessage];
+            }
+        });
 
         setInputValue('');
 
@@ -178,8 +180,11 @@ export default function ChatWidget() {
             setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
         }
 
-        // fetchFaqByQuestion(question);
-        faqMutation.mutateAsync(question);
+        const loaderId = Date.now() + 1;
+        const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
+        setMessages(prev => [...prev, loadingMessage]);
+
+        faqMutation.mutate(question);
     }
 
     function toggleWelcome() {
@@ -188,20 +193,24 @@ export default function ChatWidget() {
     }
 
     function openFaq() {
+        setFaqLoading(true);
+        setTouched(true);
+        queryClient.prefetchQuery({
+            queryKey: ['faqs'],
+            queryFn: fetchFaqs
+        });
+
         setIsWelcomeOpen(false);
         setIsFaqOpen(true);
         setIsChatOpen(false);
         setIsAgentOpen(false);
         // fetchFaqs();
-        
-        setFaqs(data.data.result.rootQuestions);
-        setFaqLoading(false);
+
         setFaqDepth(0);
 
     }
 
     function openChat() {
-        CustomerChat();
         setIsWelcomeOpen(false);
         setIsFaqOpen(false);
         setIsChatOpen(true);
@@ -215,6 +224,7 @@ export default function ChatWidget() {
         setIsChatOpen(false);
         setIsAgentOpen(true);
         setShowBotIcon(false);
+        CustomerChat();
     }
 
     const handleFaqBackToStart = () => {
@@ -226,6 +236,7 @@ export default function ChatWidget() {
     };
 
     const closeChat = () => {
+        setTouched(false)
         setIsAgentOpen(false);
         setIsChatOpen(false);
         setShowBotIcon(true);
@@ -244,12 +255,15 @@ export default function ChatWidget() {
             isLoading: false
         };
         setMessages(prev => [...prev, newMessage]);
-        setInputValue('');
 
         // Add loading indicator for bot response
         const loaderId = Date.now() + 1;
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
+
+        faqMutation.mutate(inputValue);
+
+        setInputValue('');
     }
 
 
@@ -338,14 +352,14 @@ export default function ChatWidget() {
                                                 <span>Back to Start</span>
                                             </button>
                                         </div>
-                                    ) : (!(msg.text === "") ? (
+                                    ) : (
                                         <>
-                                            <p className={msg.type === 'bot' ? (faqMutation.isPending ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
-                                                {faqMutation.isPending ? <span className="loader"></span> : msg.text}
+                                            <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
+                                                {msg.isLoading ? <span className="loader"></span> : msg.text}
                                             </p>
-                                            <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>
+                                            {!msg.isLoading && <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>}
                                         </>
-                                    ) : null)}
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -380,7 +394,7 @@ export default function ChatWidget() {
                         </div>
                     </div>
                     <div className="chat-body">
-                        <div className="messages">
+                        <div className="messages" ref={scrollRef}>
                             <p className="bot-msg">Thanks for joining us! Let's start by getting your name.</p>
                             {messages.map((msg, index) => (
                                 <p key={index} className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>

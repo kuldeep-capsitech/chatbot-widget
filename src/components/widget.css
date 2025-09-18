@@ -620,8 +620,7 @@
   }
 }
 
-/* Larger devices scaling */
-@media (min-width: 391px) and (max-width: 768px) {
+@media (min-width: 391px) and (max-width: 455px) {
   .chat-dialog {
     width: 90vw;
     height: 70vh;
