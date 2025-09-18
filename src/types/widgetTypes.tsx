@@ -4,10 +4,10 @@ type Faq = {
 }
 
 type Messages = {
-    id: number
-    type: string
+    id: string
+    type?: string
     text?: string
     options?: []
-    time: string
-    isLoading: boolean
+    time?: string
+    isLoading?: boolean
 }

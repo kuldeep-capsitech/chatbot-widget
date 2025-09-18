@@ -2,7 +2,16 @@ import { h, render } from 'preact';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ChatWidget from './components/chatwidget.js';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+    mutations: {
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    }
+  },
+});
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');

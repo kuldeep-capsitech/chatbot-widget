@@ -19,7 +19,7 @@ export default function ChatWidget() {
     const [touched, setTouched] = useState(false);
     const [messages, setMessages] = useState<Messages[]>([
         {
-            id: 1,
+            id: "",
             type: 'bot',
             text: 'Hi! How can I help you?',
             time: dateParser(Date.now())[1],
@@ -53,15 +53,15 @@ export default function ChatWidget() {
     /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
     const queryClient = useQueryClient();
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isRefetchError, isLoadingError } = useQuery({
         queryKey: ['faqs'],
         queryFn: fetchFaqs,
         enabled: touched
     })
 
     const faqMutation = useMutation({
-        mutationFn: async (question: string) => {
-            const res = await api.post(`/Chat/GetFaqByQuestion`, { companyId, question });
+        mutationFn: async (questionId: string) => {
+            const res = await api.post(`/Chat/GetFaqByQuestion`, { companyId, questionId });
             return res;
         },
         onSuccess: (res) => {
@@ -71,7 +71,7 @@ export default function ChatWidget() {
 
             // replace loading with bot message
             const botMessage = {
-                id: Date.now(),
+                id: Date.now().toString(),
                 type: 'bot',
                 text: res.data?.result?.answer || "Sorry I don't know the answer ",
                 time: dateParser(Date.now())[1],
@@ -82,7 +82,7 @@ export default function ChatWidget() {
             // Add inline FAQ options in chat, or Back to Start button if no options or no text and options
             if (!res.data?.result?.answer && (!optionsData || optionsData.length === 0)) {
                 const backToStartMessage = {
-                    id: Date.now() + 1,
+                    id: (Date.now() + 1).toString(),
                     type: 'back-to-start',
                     time: dateParser(Date.now())[1],
                     isLoading: false
@@ -90,7 +90,7 @@ export default function ChatWidget() {
                 setMessages(prev => [...prev, backToStartMessage]);
             } else if (!optionsData || optionsData.length === 0) {
                 const backToStartMessage = {
-                    id: Date.now() + 1,
+                    id: (Date.now() + 1).toString(),
                     type: 'back-to-start',
                     time: dateParser(Date.now())[1],
                     isLoading: false
@@ -98,7 +98,7 @@ export default function ChatWidget() {
                 setMessages(prev => [...prev, backToStartMessage]);
             } else if (optionsData && optionsData.length > 0) {
                 const faqOptionsMessage = {
-                    id: Date.now() + 1,
+                    id: (Date.now() + 1).toString(),
                     type: 'faq-options',
                     options: optionsData,
                     time: dateParser(Date.now())[1],
@@ -151,13 +151,13 @@ export default function ChatWidget() {
 
     /** ------------------------------------ EVENT HANDLERS----------------------------------------------- ---- **/
 
-    function handleFaqClick(question: string) {
+    function handleFaqClick(faq:Faq) {
         openChat();
 
         const userMessage = {
-            id: Date.now(),
+            id: faq.id,
             type: 'user',
-            text: question,
+            text: faq.question,
             time: dateParser(Date.now())[1],
             isLoading: false
         };
@@ -173,14 +173,14 @@ export default function ChatWidget() {
         setInputValue('');
 
         if (isFaqOpen) {
-            setFaqs(prevFaqs => prevFaqs.filter(faq => faq.question !== question));
+            setFaqs(prevFaqs => prevFaqs.filter(f => f.id !== faq.id));
         }
 
-        const loaderId = Date.now() + 1;
+        const loaderId = (Date.now() + 1).toString();
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
-        faqMutation.mutate(question);
+        faqMutation.mutate(faq.id);
     }
 
     function toggleWelcome() {
@@ -235,7 +235,7 @@ export default function ChatWidget() {
         setIsAgentOpen(false);
         setIsChatOpen(false);
         setShowBotIcon(true);
-        setMessages([{ id: 1, type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
+        setMessages([{ id: "", type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
     }
 
     // Handle user input message send
@@ -243,7 +243,7 @@ export default function ChatWidget() {
         if (!inputValue.trim()) return;
 
         const newMessage = {
-            id: Date.now(),
+            id: Date.now().toString(),
             type: 'user',
             text: inputValue,
             time: dateParser(Date.now())[1],
@@ -252,7 +252,7 @@ export default function ChatWidget() {
         setMessages(prev => [...prev, newMessage]);
 
         // Add loading indicator for bot response
-        const loaderId = Date.now() + 1;
+        const loaderId = (Date.now() + 1).toString();
         const loadingMessage = { id: loaderId, type: 'bot', text: "", time: dateParser(Date.now())[1], isLoading: true };
         setMessages(prev => [...prev, loadingMessage]);
 
@@ -290,11 +290,11 @@ export default function ChatWidget() {
                 <div className="faq-box">
                     <div className="faq-options">
                         <ul className="faq-options-li">
-                            {faqLoading ? (
+                            {(isLoadingError || isRefetchError) ? <li className="sorry">It's not you, it's us</li> : faqLoading ? (
                                 <FaqSkeleton />
                             ) : (
                                 faqs.map((faq, index) => (
-                                    <li key={index} onClick={() => handleFaqClick(faq.question)}>
+                                    <li key={index} onClick={() => handleFaqClick(faq)}>
                                         {faq.question}
                                     </li>
                                 ))
@@ -334,7 +334,7 @@ export default function ChatWidget() {
                                     {msg.type === 'faq-options' ? (
                                         <div className="faq-inline-options">
                                             {msg.options && msg.options.map((option: Faq, idx: number) => (
-                                                <button key={idx} className="faq-inline-btn" onClick={() => handleFaqClick(option.question)}>
+                                                <button key={idx} className="faq-inline-btn" onClick={() => handleFaqClick(option)}>
                                                     {option.question}
                                                 </button>
                                             ))}
