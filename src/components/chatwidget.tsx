@@ -50,6 +50,36 @@ export default function ChatWidget() {
         }
     }, [messages.length]);
 
+
+        const iconRef = useRef<HTMLDivElement>(null);
+
+        // useEffect(() => {
+        //     const handleMouseMove = (e: MouseEvent) => {
+        //         const icon = iconRef.current;
+        //         if (!icon) return;
+
+        //         const rect = icon.getBoundingClientRect();
+        //         const iconX = rect.left + rect.width / 3;
+        //         const iconY = rect.top + rect.height / 3;
+
+        //         const dist = Math.sqrt(
+        //             Math.pow(e.clientX - iconX, 2) + Math.pow(e.clientY - iconY, 2)
+        //         );
+
+        //         if (dist<60) {
+        //             const newX = Math.random() * (window.innerWidth - rect.width);
+        //             const newY = Math.random() * (window.innerHeight - rect.height);
+
+        //             icon.style.position = "fixed";
+        //             icon.style.left = `${newX}px`;
+        //             icon.style.top = `${newY}px`;
+        //         }
+        //     };
+
+        //     document.addEventListener("mousemove", handleMouseMove);
+        //     return () => document.removeEventListener("mousemove", handleMouseMove);
+        // }, []);
+
     /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
     const queryClient = useQueryClient();
 
@@ -266,7 +296,7 @@ export default function ChatWidget() {
         <div id="chat-root">
             {/* Floating Chat Icon */}
             {showBotIcon && (
-                <div className="chat-icon" role="button" onClick={toggleWelcome}>
+                <div className="chat-icon" role="button" onClick={toggleWelcome} ref={iconRef}>
                     {bot_icon}
                 </div>
             )}
@@ -349,7 +379,19 @@ export default function ChatWidget() {
                                     ) : (
                                         <>
                                             <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
-                                                {msg.isLoading ? <span className="loader"></span> : msg.text}
+                                                {msg.type === 'bot' && msg.isLoading ? (
+                                                    <span className="loader"></span>
+                                                ) : msg.type === 'bot' ? (
+                                                    msg.text.split(" ").map((w, i) => {
+                                                        if (w.startsWith("https://") && (w.endsWith(".com") || w.endsWith(".in"))) {
+                                                            return <a key={i} href={w} target="_blank">{w}</a>;
+                                                        } else {
+                                                            return <span key={i}>{w} </span>;
+                                                        }
+                                                    })
+                                                ) : (
+                                                    msg.text
+                                                )}
                                             </p>
                                             {!msg.isLoading && <div className={msg.type === 'bot' ? 'bot-time' : 'user-time'}>{msg.time}</div>}
                                         </>
