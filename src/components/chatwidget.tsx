@@ -106,7 +106,7 @@ export default function ChatWidget() {
             const botMessage = {
                 id: Date.now().toString(),
                 type: 'bot',
-                text: res.data?.result?.answer || "Sorry I don't have the answer ",
+                text: res.data?.result?.answer || "Sorry I don't have the answer!",
                 time: dateParser(Date.now())[1],
                 isLoading: false
             };
