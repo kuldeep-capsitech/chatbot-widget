@@ -269,14 +269,14 @@
 }
 
 .bot-msg {
-  padding: 12px;
+  padding: 5px 12px;
   display: inline-block;
-  max-width: 290px;
+  max-width: 75%;
   width: fit-content;
   border-top-right-radius: 16px;
   border-bottom-right-radius: 16px;
   border-bottom-left-radius: 16px;
-  padding-top: 12px;
+  /* padding-top: 12px; */
   text-align: left;
   background-color: #f4f4f4;
   font-family: "Outfit", sans-serif;
@@ -410,14 +410,15 @@
 .user-msg {
   min-width: 15px;
   width: fit-content;
-  max-width: 290px;
-  padding: 12px;
+  max-width: 75%;
+  padding: 5px 12px;
   border: 1px solid #43319a;
   border-top-left-radius: 16px;
   border-bottom-right-radius: 16px;
   border-bottom-left-radius: 16px;
   margin-left: auto;
   margin-bottom: 2.5px;
+  overflow-y: auto;
 
   line-height: 22px;
   /* letter-spacing: 0.5px; */
@@ -969,15 +970,15 @@
   display: flex;
   /* flex-direction: column; */
   gap: 8px;
-  margin-bottom: 16px; 
+  margin-bottom: 16px;
 }
 
 .faq-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px; 
-  padding: 8px 12px; 
-  font-size: 0.875rem; 
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #ffffff;
   cursor: pointer;
@@ -1003,17 +1004,17 @@
 }
 
 .faq-textarea-wrapper {
-  margin-bottom: 16px; 
+  margin-bottom: 16px;
 }
 
 .faq-textarea {
   width: 100%;
-  min-height: 80px; 
-  padding: 8px; 
+  min-height: 80px;
+  padding: 8px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px; 
-  font-size: 0.75rem; 
+  border-radius: 8px;
+  font-size: 0.75rem;
   color: #ffffff;
   resize: vertical;
   transition: border-color 0.2s ease;
@@ -1027,27 +1028,27 @@
 .faq-textarea:focus {
   outline: none;
   border-color: #60a5fa;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); 
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .faq-char-count {
   text-align: right;
   font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.7);
-  margin-top: 6px; 
+  margin-top: 6px;
 }
 
 .faq-actions {
   display: flex;
   justify-content: center;
-  gap: 25px; 
+  gap: 25px;
 }
 
 .faq-submit,
 .faq-cancel {
-  padding: 8px 16px; 
-  border-radius: 8px; 
-  font-size: 0.75rem; 
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;

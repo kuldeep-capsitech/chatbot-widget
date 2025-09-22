@@ -440,40 +440,45 @@ export default function ChatWidget() {
                 </div>
             )}
 
-            {/* Agent Section */}
-            {/* {isAgentOpen && (
-                <div className="chat-dialog fly-x">
-                    <div className="chat-header">
-                        <div>
-                            <h1>ChatFlow</h1>
-                            <p>A live chat interface for seamless communication.</p>
+            <>
+                    {/* Agent Section */}
+                    {/* {isAgentOpen && (
+                    <div className="chat-dialog fly-x">
+                        <div className="chat-header">
+                            <div>
+                                <h1>ChatFlow</h1>
+                                <p>A live chat interface for seamless communication.</p>
+                            </div>
+                            <div className="cross" role="button" onClick={closeChat}>
+                                {close_icon}
+                            </div>
                         </div>
-                        <div className="cross" role="button" onClick={closeChat}>
-                            {close_icon}
+                        <div className="chat-body">
+                            <div className="messages" ref={scrollRef}>
+                                <p className="bot-msg">Thanks for joining us! Let's start by getting your name.</p>
+                                {messages.map((msg, index) => (
+                                    <p key={index} className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
+                                        {msg.isLoading ? <span className="loader"></span> : msg.text}
+                                    </p>
+                                ))}
+                            </div>
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    placeholder="Type your message..."
+                                    value={inputValue}
+                                    onInput={e => setInputValue(e.currentTarget.value)}
+                                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                                />
+                                <div className="send" onClick={sendMessage}>{send_icon}</div>
+                            </div>
                         </div>
                     </div>
-                    <div className="chat-body">
-                        <div className="messages" ref={scrollRef}>
-                            <p className="bot-msg">Thanks for joining us! Let's start by getting your name.</p>
-                            {messages.map((msg, index) => (
-                                <p key={index} className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
-                                    {msg.isLoading ? <span className="loader"></span> : msg.text}
-                                </p>
-                            ))}
-                        </div>
-                        <div className="input">
-                            <input
-                                type="text"
-                                placeholder="Type your message..."
-                                value={inputValue}
-                                onInput={e => setInputValue(e.currentTarget.value)}
-                                onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                            />
-                            <div className="send" onClick={sendMessage}>{send_icon}</div>
-                        </div>
-                    </div>
-                </div>
-            )} */}
+                )} */}
+
+            </>
+
         </div>
+
     );
 }
