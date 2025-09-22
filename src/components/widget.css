@@ -786,6 +786,8 @@
   }
 }
 
+/*  */
+/* 
 .sorry {
   color: rgb(212, 35, 35);
   font-weight: 800;
@@ -895,4 +897,235 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+ */
+
+/* FAQ Feedback Modal Styling with Glassmorphism - Smaller Scale */
+.faq-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.faq-modal {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 400px; /* Reduced from 500px */
+  padding: 16px; /* Reduced from 24px */
+  margin: 12px; /* Reduced from 16px */
+  position: relative;
+  animation: slideUp 0.3s ease-in-out;
+}
+
+.faq-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px; /* Reduced from 20px */
+}
+
+.faq-title {
+  font-size: 1.25rem; /* Reduced from 1.5rem */
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.faq-close-icon {
+  background: none;
+  border: none;
+  font-size: 1.25rem; /* Reduced from 1.5rem */
+  color: #ffffff;
+  cursor: pointer;
+  padding: 2px; /* Reduced from 4px */
+  transition: color 0.2s ease;
+}
+
+.faq-close-icon:hover {
+  color: #e5e7eb;
+}
+
+.faq-close-icon:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.faq-options {
+  display: flex;
+  /* flex-direction: column; */
+  gap: 8px; /* Reduced from 12px */
+  margin-bottom: 16px; /* Reduced from 20px */
+}
+
+.faq-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px; /* Reduced from 10px */
+  padding: 8px 12px; /* Reduced from 12px 16px */
+  font-size: 0.875rem; /* Reduced from 1rem */
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+.faq-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.faq-btn.active {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: #60a5fa;
+  color: #ffffff;
+}
+
+.faq-btn:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.faq-textarea-wrapper {
+  margin-bottom: 16px; /* Reduced from 20px */
+}
+
+.faq-textarea {
+  width: 100%;
+  min-height: 80px; /* Reduced from 100px */
+  padding: 8px; /* Reduced from 12px */
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px; /* Reduced from 10px */
+  font-size: 0.75rem; /* Reduced from 0.875rem */
+  color: #ffffff;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+.faq-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.faq-textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Adjusted shadow */
+}
+
+.faq-char-count {
+  text-align: right;
+  font-size: 0.6875rem; /* Reduced from 0.75rem */
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 6px; /* Reduced from 8px */
+}
+
+.faq-actions {
+  display: flex;
+  justify-content: center;
+  gap: 25px; /* Reduced from 12px */
+}
+
+.faq-submit,
+.faq-cancel {
+  padding: 8px 16px; /* Reduced from 10px 20px */
+  border-radius: 8px; /* Reduced from 10px */
+  font-size: 0.75rem; /* Reduced from 0.875rem */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.faq-submit {
+  background: rgba(59, 130, 246, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+}
+
+.faq-submit:hover {
+  background: rgba(59, 130, 246, 0.9);
+}
+
+.faq-submit:disabled {
+  background: rgba(255, 255, 255, 0.2);
+  cursor: not-allowed;
+}
+
+.faq-submit:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.faq-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+}
+
+.faq-cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.faq-cancel:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .faq-modal {
+    margin: 6px; /* Reduced from 8px */
+    padding: 12px; /* Reduced from 16px */
+  }
+
+  .faq-title {
+    font-size: 1rem; /* Reduced from 1.25rem */
+  }
+
+  .faq-btn {
+    font-size: 0.75rem; /* Reduced from 0.875rem */
+    padding: 8px 10px; /* Adjusted */
+  }
+
+  .faq-textarea {
+    font-size: 0.6875rem; /* Reduced from 0.8125rem */
+  }
 }
