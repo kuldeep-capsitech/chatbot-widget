@@ -5,7 +5,6 @@ import { api } from '../api';
 import { bot_icon, close_icon, send_icon } from '../assets/svg';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import FaqFeedbackModal from './faq-feedback';
-import axios from 'axios';
 
 export default function ChatWidget() {
 
@@ -30,7 +29,7 @@ export default function ChatWidget() {
     ]);
     const [inputValue, setInputValue] = useState('');
     const [companyId, setCompanyId] = useState('');
-    const [chatSpace, setChatSpace] = useState(false);
+    const [chatSpace, setChatSpace] = useState(true);
     const [faqFb, setFaqFb] = useState(false);
 
     /** --------------------------------------------- INITIALIZATION ------------------------------------ **/
@@ -185,15 +184,16 @@ export default function ChatWidget() {
     }
 
     async function submitFaqFeedback() {
-        const res = await api.post("/Lead/Save", {
-                title: "string",
-                requestBy: "string",
-                assignTo: "string",
-                priority: 0,
-                leadType: "string",
-                description: "string"   
-        })
-        console.log(res)
+        // const res = await api.post("/Lead/Save", {
+        //         title: "string",
+        //         requestBy: "string",
+        //         assignTo: "string",
+        //         priority: 0,
+        //         leadType: "string",
+        //         description: "string"   
+        // })
+        // console.log(res)
+        console.log("feedback submitted")
     }
 
     /** ------------------------------------ EVENT HANDLERS----------------------------------------------- ---- **/
@@ -271,6 +271,7 @@ export default function ChatWidget() {
 
     const handleFaqBackToStart = () => {
         setChatSpace(false);
+        setFaqFb(false);
         setFaqLoading(true);
         setFaqDepth(0);
         setShowBotIcon(true);
@@ -283,7 +284,8 @@ export default function ChatWidget() {
         setIsAgentOpen(false);
         setIsChatOpen(false);
         setShowBotIcon(true);
-        setMessages([{ id: "", type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
+        // setMessages([{ id: "", type: 'bot', text: 'Hi! How can I help you?', time: dateParser(Date.now())[1], isLoading: false }])
+        setMessages(messages => messages.filter((msg, i) => msg.type !== "back-to-start"));
     }
 
     // Handle user input message send
@@ -348,7 +350,8 @@ export default function ChatWidget() {
                                 ))
                             )}
 
-                            <div id="talk-btn" onClick={openAgent}>Can I talk to someone?</div>
+                            {/* <div id="talk-btn" onClick={openAgent}>Can I talk to someone?</div> */}
+                            <div id="talk-btn" onClick={openChat}>Can I talk to someone?</div>
                         </ul>
                     </div>
                 </div>
@@ -438,7 +441,7 @@ export default function ChatWidget() {
             )}
 
             {/* Agent Section */}
-            {isAgentOpen && (
+            {/* {isAgentOpen && (
                 <div className="chat-dialog fly-x">
                     <div className="chat-header">
                         <div>
@@ -470,7 +473,7 @@ export default function ChatWidget() {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

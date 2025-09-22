@@ -10,7 +10,7 @@ interface FaqFeedbackModalProps {
     cancelLabel?: string;
 }
 
-const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
+const CloseModal = ({
     onSubmit,
     onClose,
     title = "Did this satisfy you?",
@@ -112,21 +112,14 @@ const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
                         aria-pressed={selected === "yes"}
                         ref={firstFocusableRef}
                     >
-                        ✅ Yes, it helped
+                       ❌ Close chat
                     </button>
                     <button
                         className={`faq-btn ${selected === "partial" ? "active" : ""}`}
                         onClick={() => setSelected("partial")}
                         aria-pressed={selected === "partial"}
                     >
-                        ⚠️ Partially
-                    </button>
-                    <button
-                        className={`faq-btn ${selected === "no" ? "active" : ""}`}
-                        onClick={() => setSelected("no")}
-                        aria-pressed={selected === "no"}
-                    >
-                        ❌ No, still need help
+                        ⚠️ Cancel
                     </button>
                 </div>
 
@@ -166,4 +159,4 @@ const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
     );
 };
 
-export default FaqFeedbackModal;
+export default CloseModal;

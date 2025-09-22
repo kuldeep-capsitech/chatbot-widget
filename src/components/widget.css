@@ -733,7 +733,7 @@
 /* New loder */
 
 /* Dark mode support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .chat-dialog {
     background: #2c2c2c;
     color: #fff;
@@ -765,7 +765,7 @@
   .loader-wrapper {
     background-color: #3c3c3c;
   }
-}
+} */
 
 @keyframes l5-dark {
   0% {
@@ -916,7 +916,7 @@
 }
 
 .faq-modal {
-  background: rgba(255, 255, 255, 0.15);
+  background: #5347aa3f;
   backdrop-filter: blur(12px);
   border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
