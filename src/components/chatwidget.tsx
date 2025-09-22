@@ -55,34 +55,34 @@ export default function ChatWidget() {
     }, [messages.length]);
 
 
-        const iconRef = useRef<HTMLDivElement>(null);
+    const iconRef = useRef<HTMLDivElement>(null);
 
-        // useEffect(() => {
-        //     const handleMouseMove = (e: MouseEvent) => {
-        //         const icon = iconRef.current;
-        //         if (!icon) return;
+    // useEffect(() => {
+    //     const handleMouseMove = (e: MouseEvent) => {
+    //         const icon = iconRef.current;
+    //         if (!icon) return;
 
-        //         const rect = icon.getBoundingClientRect();
-        //         const iconX = rect.left + rect.width / 3;
-        //         const iconY = rect.top + rect.height / 3;
+    //         const rect = icon.getBoundingClientRect();
+    //         const iconX = rect.left + rect.width / 3;
+    //         const iconY = rect.top + rect.height / 3;
 
-        //         const dist = Math.sqrt(
-        //             Math.pow(e.clientX - iconX, 2) + Math.pow(e.clientY - iconY, 2)
-        //         );
+    //         const dist = Math.sqrt(
+    //             Math.pow(e.clientX - iconX, 2) + Math.pow(e.clientY - iconY, 2)
+    //         );
 
-        //         if (dist<60) {
-        //             const newX = Math.random() * (window.innerWidth - rect.width);
-        //             const newY = Math.random() * (window.innerHeight - rect.height);
+    //         if (dist<60) {
+    //             const newX = Math.random() * (window.innerWidth - rect.width);
+    //             const newY = Math.random() * (window.innerHeight - rect.height);
 
-        //             icon.style.position = "fixed";
-        //             icon.style.left = `${newX}px`;
-        //             icon.style.top = `${newY}px`;
-        //         }
-        //     };
+    //             icon.style.position = "fixed";
+    //             icon.style.left = `${newX}px`;
+    //             icon.style.top = `${newY}px`;
+    //         }
+    //     };
 
-        //     document.addEventListener("mousemove", handleMouseMove);
-        //     return () => document.removeEventListener("mousemove", handleMouseMove);
-        // }, []);
+    //     document.addEventListener("mousemove", handleMouseMove);
+    //     return () => document.removeEventListener("mousemove", handleMouseMove);
+    // }, []);
 
     /*----------------------------------------- TANSTACK QUERY --------------------------------------------*/
     const queryClient = useQueryClient();
@@ -198,7 +198,7 @@ export default function ChatWidget() {
 
     /** ------------------------------------ EVENT HANDLERS----------------------------------------------- ---- **/
 
-    function handleFaqClick(faq:Faq) {
+    function handleFaqClick(faq: Faq) {
         openChat();
 
         const userMessage = {
@@ -347,14 +347,7 @@ export default function ChatWidget() {
                                     </li>
                                 ))
                             )}
-                            <div className="faq-header">
-                                {faqDepth > 0 && (
-                                    <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                                        <span>Back to Start</span>
-                                    </button>
-                                )}
-                            </div>
+
                             <div id="talk-btn" onClick={openAgent}>Can I talk to someone?</div>
                         </ul>
                     </div>
@@ -392,16 +385,16 @@ export default function ChatWidget() {
                                             {faqFb && <FaqFeedbackModal onSubmit={submitFaqFeedback} onClose={handleFaqBackToStart} />}
                                             <div className="faq-header">
                                                 <button className="back-to-start" onClick={CustomerChat} aria-label="Back to start">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-radio-icon lucide-radio"><path d="M16.247 7.761a6 6 0 0 1 0 8.478" /><path d="M19.075 4.933a10 10 0 0 1 0 14.134" /><path d="M4.925 19.067a10 10 0 0 1 0-14.134" /><path d="M7.753 16.239a6 6 0 0 1 0-8.478" /><circle cx="12" cy="12" r="2" /></svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-radio-icon lucide-radio"><path d="M16.247 7.761a6 6 0 0 1 0 8.478" /><path d="M19.075 4.933a10 10 0 0 1 0 14.134" /><path d="M4.925 19.067a10 10 0 0 1 0-14.134" /><path d="M7.753 16.239a6 6 0 0 1 0-8.478" /><circle cx="12" cy="12" r="2" /></svg>
                                                     <span>Live chat</span>
                                                 </button>
-                                                <button className="back-to-start" onClick={()=>setFaqFb(true)} aria-label="Back to start">
+                                                <button className="back-to-start" onClick={() => setFaqFb(true)} aria-label="Back to start">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
                                                     <span>Back to Start</span>
                                                 </button>
-                                            </div>       
+                                            </div>
                                         </>
-                                        
+
                                     ) : (
                                         <>
                                             <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
@@ -424,7 +417,7 @@ export default function ChatWidget() {
                                     )}
                                 </div>
                             ))}
-                            
+
                         </div>
 
                         {/* Input */}

@@ -15,7 +15,7 @@ const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
     onClose,
     title = "Did this answer your question?",
     submitLabel = "Submit",
-    cancelLabel = "Cancel",
+    cancelLabel = "Skip",
 }) => {
     const [selected, setSelected] = useState<FeedbackOption | null>(null);
     const [comment, setComment] = useState("");
@@ -98,7 +98,7 @@ const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
                             aria-label="Close modal"
                             ref={lastFocusableRef}
                         >
-                            ×
+                            x
                         </button>
                     )}
                 </div>
