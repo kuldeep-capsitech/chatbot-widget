@@ -13,7 +13,7 @@ interface FaqFeedbackModalProps {
 const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
     onSubmit,
     onClose,
-    title = "Did this answer your question?",
+    title = "Did this satisfy you?",
     submitLabel = "Submit",
     cancelLabel = "Cancel",
 }) => {
