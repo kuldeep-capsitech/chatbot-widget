@@ -4,6 +4,7 @@ import FaqSkeleton from './skeleton';
 import { api } from '../api';
 import { bot_icon, close_icon, send_icon } from '../assets/svg';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import FaqFeedbackModal from './faq-feedback';
 
 export default function ChatWidget() {
 
@@ -28,6 +29,8 @@ export default function ChatWidget() {
     ]);
     const [inputValue, setInputValue] = useState('');
     const [companyId, setCompanyId] = useState('');
+    const [chatSpace, setChatSpace] = useState(false);
+    const [faqFb, setFaqFb] = useState(false);
 
     /** --------------------------------------------- INITIALIZATION ------------------------------------ **/
     useEffect(() => {
@@ -163,7 +166,8 @@ export default function ChatWidget() {
     // signalR chat here
     async function CustomerChat() {
         try {
-            const res = await api.post("/Chat/request-live-chat", {
+            setChatSpace(true);
+            const res = await api.post("/Chat/RequestLiveChat", {
                 companyId,
                 customerName: "test",
                 customerEmail: "user@example.com",
@@ -253,6 +257,7 @@ export default function ChatWidget() {
     }
 
     const handleFaqBackToStart = () => {
+        setChatSpace(false);
         setFaqLoading(true);
         setFaqDepth(0);
         setShowBotIcon(true);
@@ -370,12 +375,20 @@ export default function ChatWidget() {
                                             ))}
                                         </div>
                                     ) : msg.type === 'back-to-start' ? (
-                                        <div className="faq-header">
-                                            <button className="back-to-start" onClick={handleFaqBackToStart} aria-label="Back to start">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                                                <span>Back to Start</span>
-                                            </button>
-                                        </div>
+                                        <>
+                                            {faqFb && <FaqFeedbackModal onSubmit={()=>console.log("feedback submitted")} onClose={handleFaqBackToStart} />}
+                                            <div className="faq-header">
+                                                <button className="back-to-start" onClick={CustomerChat} aria-label="Back to start">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-radio-icon lucide-radio"><path d="M16.247 7.761a6 6 0 0 1 0 8.478" /><path d="M19.075 4.933a10 10 0 0 1 0 14.134" /><path d="M4.925 19.067a10 10 0 0 1 0-14.134" /><path d="M7.753 16.239a6 6 0 0 1 0-8.478" /><circle cx="12" cy="12" r="2" /></svg>
+                                                    <span>Live chat</span>
+                                                </button>
+                                                <button className="back-to-start" onClick={()=>setFaqFb(true)} aria-label="Back to start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                                                    <span>Back to Start</span>
+                                                </button>
+                                            </div>       
+                                        </>
+                                        
                                     ) : (
                                         <>
                                             <p className={msg.type === 'bot' ? (msg.isLoading ? "loader-wrapper" : 'bot-msg') : 'user-msg'}>
@@ -398,10 +411,11 @@ export default function ChatWidget() {
                                     )}
                                 </div>
                             ))}
+                            
                         </div>
 
                         {/* Input */}
-                        <div className="input">
+                        {chatSpace && <div className="input">
                             <input
                                 type="text"
                                 placeholder="Type your message..."
@@ -412,7 +426,7 @@ export default function ChatWidget() {
                             <div className="send" onClick={sendMessage}>
                                 {send_icon}
                             </div>
-                        </div>
+                        </div>}
                     </div>
                 </div>
             )}

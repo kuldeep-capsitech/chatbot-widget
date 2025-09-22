@@ -11,3 +11,10 @@ type Messages = {
     time?: string
     isLoading?: boolean
 }
+
+type FeedbackOption = "yes" | "partial" | "no" | null;
+
+interface FaqFeedbackModalProps {
+    onSubmit: (feedback: { option: FeedbackOption; comment?: string }) => void;
+    onClose?: () => void;
+}
