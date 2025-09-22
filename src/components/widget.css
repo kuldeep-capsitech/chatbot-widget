@@ -933,7 +933,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px; /* Reduced from 20px */
+  margin-bottom: 20px; /* Reduced from 20px */
+  margin-top: 20px; /* Reduced from 20px */
 }
 
 .faq-title {
