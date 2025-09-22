@@ -92,14 +92,16 @@ const FaqFeedbackModal: React.FC<FaqFeedbackModalProps> = ({
                         {title}
                     </h3>
                     {onClose && (
-                        <button
-                            className="faq-close-icon"
-                            onClick={handleClose}
-                            aria-label="Close modal"
-                            ref={lastFocusableRef}
-                        >
-                            ×
-                        </button>
+                        // <button
+                        //     className="faq-close-icon"
+                        //     onClick={handleClose}
+                        //     aria-label="Close modal"
+                        //     ref={lastFocusableRef}
+                        // >
+                        //     ×
+                        // </button>
+
+                        <></>
                     )}
                 </div>
 
